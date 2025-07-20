@@ -1,0 +1,20 @@
+Pour une application Jakarta EE (JEE) en production, tu ne dois pas utiliser hibernate.hbm2ddl.auto=update. Ce mécanisme automatique est pratique en dev, mais dangereux en prod car :
+
+Tu ne maîtrises pas précisément les modifications sur la base.
+
+Tu ne peux pas versionner les changements.
+
+Tu ne peux pas rollback proprement si une migration casse quelque chose.
+
+👉 En production, la bonne pratique avec Jakarta EE est d'utiliser un outil de migration de schéma tel que :
+
+✅ Flyway pour Jakarta EE (Recommandé)
+📌 Pourquoi Flyway ?
+Léger, simple à intégrer
+
+Pas dépendant d’un framework comme Spring
+
+Supporte PostgreSQL parfaitement
+
+Versionne tes scripts SQL (V1__init.sql, V2__add_column.sql, etc.)
+
