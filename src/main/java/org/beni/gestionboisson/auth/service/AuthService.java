@@ -8,4 +8,5 @@ import org.beni.gestionboisson.auth.exceptions.PasswordChangeRequiredException;
 public interface AuthService {
     AuthResponseDTO login(AuthRequestDTO authRequestDTO) throws PasswordChangeRequiredException;
     AuthResponseDTO changePassword(ChangePasswordRequestDTO request);
+    AuthResponseDTO refreshAccessToken(String refreshToken);
 }

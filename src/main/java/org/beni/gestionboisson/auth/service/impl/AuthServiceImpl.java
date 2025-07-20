@@ -1,5 +1,6 @@
 package org.beni.gestionboisson.auth.service.impl;
 
+import io.jsonwebtoken.Claims;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.beni.gestionboisson.auth.dto.AuthRequestDTO;
@@ -43,8 +44,13 @@ public class AuthServiceImpl implements AuthService {
         }
 
         if (BCrypt.checkpw(authRequestDTO.getPassword(), utilisateur.getMotDePasseHache())) {
-            String token = jwtUtil.generateToken(utilisateur.getNomUtilisateur(), utilisateur.getRole().getCode(),utilisateur.getEmail());
-            return new AuthResponseDTO(token);
+            String accessToken = jwtUtil.generateAccessToken(utilisateur.getNomUtilisateur(), utilisateur.getRole().getCode(), utilisateur.getEmail());
+            String refreshToken = jwtUtil.generateRefreshToken(utilisateur.getNomUtilisateur());
+
+            utilisateur.setRefreshToken(refreshToken);
+            utilisateurRepository.save(utilisateur);
+
+            return new AuthResponseDTO(accessToken, refreshToken);
         } else {
             throw new RuntimeException("Invalid credentials");
         }
@@ -52,41 +58,48 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponseDTO changePassword(ChangePasswordRequestDTO request) {
-      //  String plainPassword = "password123";
-
-        // 2. Génération du hash (avec salt intégré automatiquement)
-     //   String hashedPassword = BCrypt.hashpw(plainPassword, BCrypt.gensalt());
-
-        // 3. Affiche le hash généré
-       // System.out.println("Generated Hash: " + hashedPassword);
-
-        // 4. Vérifie que le mot de passe correspond au hash
-      //  boolean isMatch = BCrypt.checkpw(request.getOldPassword(), hashedPassword);
-      //  System.out.println("Password Match: " + isMatch);
-
-       // String hashFromDB = "$2a$10$KLi5rqA31lzO661s75VLoui0s.Cf6O52aOk6q41qTEO6i7UYjwe5a";
-        //System.out.println("Match test = " + BCrypt.checkpw("password123", hashFromDB));
-
         Utilisateur utilisateur = utilisateurRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found."));
-        logger.info("Hashed password from DB for {}: {}", request.getEmail(), utilisateur.getMotDePasseHache());
-        System.out.println(request.getNewPassword());
-        boolean match = BCrypt.checkpw("password123", "$2a$10$a3/DnQqScYzmadUR52f/HOiO50FYfG.blUQ/cvNj07/kjPNsgHYmK");
-        System.out.println("Match = " + match);
 
         if (!BCrypt.checkpw(request.getOldPassword(), utilisateur.getMotDePasseHache())) {
             throw new RuntimeException("Invalid old password.");
         }
-        String hashFromDB = "$2a$10$Qe.DZ2QJfgws2rhVei2pMOWltpihM8ao61khKqb3wIZB5zTrcshaS";
-        System.out.println("Match test = " + BCrypt.checkpw("newSecurePassword456", hashFromDB));
-
-
 
         utilisateur.setMotDePasseHache(BCrypt.hashpw(request.getNewPassword(), BCrypt.gensalt()));
         utilisateur.setUpdatedAt(Instant.now()); // Update updatedAt to reflect password change
         utilisateurRepository.save(utilisateur);
 
-        String token = jwtUtil.generateToken(utilisateur.getNomUtilisateur(), utilisateur.getRole().getCode(),utilisateur.getEmail());
-        return new AuthResponseDTO(token);
+        String accessToken = jwtUtil.generateAccessToken(utilisateur.getNomUtilisateur(), utilisateur.getRole().getCode(), utilisateur.getEmail());
+        String refreshToken = jwtUtil.generateRefreshToken(utilisateur.getNomUtilisateur());
+
+        utilisateur.setRefreshToken(refreshToken);
+        utilisateurRepository.save(utilisateur);
+
+        return new AuthResponseDTO(accessToken, refreshToken);
+    }
+
+    @Override
+    public AuthResponseDTO refreshAccessToken(String refreshToken) {
+        try {
+            Claims claims = jwtUtil.validateRefreshToken(refreshToken);
+            String username = claims.getSubject();
+
+            Utilisateur utilisateur = utilisateurRepository.findByNomUtilisateur(username)
+                    .orElseThrow(() -> new RuntimeException("User not found."));
+
+            if (!refreshToken.equals(utilisateur.getRefreshToken())) {
+                throw new RuntimeException("Invalid refresh token.");
+            }
+
+            String newAccessToken = jwtUtil.generateAccessToken(utilisateur.getNomUtilisateur(), utilisateur.getRole().getCode(), utilisateur.getEmail());
+            String newRefreshToken = jwtUtil.generateRefreshToken(utilisateur.getNomUtilisateur());
+
+            utilisateur.setRefreshToken(newRefreshToken);
+            utilisateurRepository.save(utilisateur);
+
+            return new AuthResponseDTO(newAccessToken, newRefreshToken);
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid or expired refresh token.", e);
+        }
     }
 }

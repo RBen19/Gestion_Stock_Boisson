@@ -40,6 +40,9 @@ public class Utilisateur {
     @Column(name = "status")
     private boolean status;
 
+    @Column(name = "refresh_token")
+    private String refreshToken;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_role", referencedColumnName = "id_role")
     private Role role;
