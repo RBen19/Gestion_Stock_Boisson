@@ -13,4 +13,5 @@ public class RoleDTO {
     private Long idRole;
     private String code;
     private String libelle;
+    private boolean status;
 }
