@@ -13,7 +13,7 @@ public class JwtUtil {
     private final String secret = "07ea51ffc27166f55af17a748438b99ac35310a60c5d10545b4e4dceb783cf41"; // Access token secret
     private final long expiration = 3600000; // 1 hour for access token
 
-    private final String refreshSecret = "another-secure-key-for-refresh-tokens-that-is-different"; // Refresh token secret
+    private final String refreshSecret = "505e261dc5647ab45ee293af753ddef9ad510acdaa59be3bf875aca1d6dc9c24"; // Refresh token secret
     private final long refreshExpiration = 604800000; // 7 days for refresh token
 
     public String generateAccessToken(String username, String role, String email) {
