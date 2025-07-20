@@ -24,6 +24,8 @@ public class Role {
 
     @Column(name = "libelle")
     private String libelle;
+    @Column(name = "status")
+    private boolean status;
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
 
