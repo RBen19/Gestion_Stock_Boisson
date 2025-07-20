@@ -28,6 +28,7 @@ public class Seeder {
             Role adminRole = new Role();
             adminRole.setCode("ADMIN");
             adminRole.setLibelle("Administrateur");
+            adminRole.setStatus(true);
             roleRepository.save(adminRole);
             System.out.println("Seeded ADMIN role.");
         }
