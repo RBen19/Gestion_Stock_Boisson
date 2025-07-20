@@ -8,6 +8,7 @@ import org.beni.gestionboisson.auth.dto.AuthResponseDTO;
 import org.beni.gestionboisson.auth.dto.ChangePasswordRequestDTO;
 import org.beni.gestionboisson.auth.entities.Utilisateur;
 import org.beni.gestionboisson.auth.exceptions.PasswordChangeRequiredException;
+import org.beni.gestionboisson.auth.exceptions.UserNotActiveException;
 import org.beni.gestionboisson.auth.repository.UtilisateurRepository;
 import org.beni.gestionboisson.auth.security.JwtUtil;
 import org.beni.gestionboisson.auth.service.AuthService;
@@ -33,10 +34,11 @@ public class AuthServiceImpl implements AuthService {
         Utilisateur utilisateur = utilisateurRepository.findByEmail(authRequestDTO.getEmail())
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
-        logger.info("Hashed password from DB for {}: {}", authRequestDTO.getEmail(), utilisateur.getMotDePasseHache());
+        logger.warn("Hashed password from DB for {}: {}", authRequestDTO.getEmail(), utilisateur.getMotDePasseHache());
+
 
         if (!utilisateur.isStatus()) {
-            throw new RuntimeException("User is not active");
+            throw new UserNotActiveException("User is not active");
         }
 
         if (utilisateur.getCreatedAt().equals(utilisateur.getUpdatedAt())) {
