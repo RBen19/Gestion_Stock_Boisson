@@ -14,6 +14,7 @@ public class RoleMapper {
                 .idRole(role.getIdRole())
                 .code(role.getCode())
                 .libelle(role.getLibelle())
+                .status(role.isStatus())
                 .build();
     }
 
@@ -25,6 +26,7 @@ public class RoleMapper {
                 .idRole(roleDTO.getIdRole())
                 .code(roleDTO.getCode())
                 .libelle(roleDTO.getLibelle())
+                .status(roleDTO.isStatus())
                 .build();
     }
 }
