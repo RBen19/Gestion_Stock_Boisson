@@ -18,6 +18,6 @@ public class FournisseurDTO {
     private String numeroTelephone;
     private String codeFournisseur;
     private Boolean status;
-    private Instant createdAt;
-    private Instant updatedAt;
+  //  private Instant createdAt;
+  //  private Instant updatedAt;
 }
