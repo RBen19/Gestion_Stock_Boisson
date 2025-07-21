@@ -6,6 +6,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.beni.gestionboisson.shared.response.ApiResponse;
 import jakarta.ws.rs.core.Response;
 import org.beni.gestionboisson.auth.dto.AuthRequestDTO;
 import org.beni.gestionboisson.auth.dto.ChangePasswordRequestDTO;
@@ -37,15 +38,13 @@ public class AuthController {
     public Response login(AuthRequestDTO authRequestDTO) {
         logger.debug("Received login request for user: {}", authRequestDTO.getEmail());
         try {
-            Response response = Response.ok(authService.login(authRequestDTO)).build();
-            logger.info("Login successful for user: {}", authRequestDTO.getEmail());
-            return response;
+            return Response.ok(ApiResponse.success(authService.login(authRequestDTO))).build();
         } catch (PasswordChangeRequiredException e) {
             logger.warn("Password change required for user {}: {}", authRequestDTO.getEmail(), e.getMessage());
-            return Response.status(Response.Status.FORBIDDEN).entity("{\"error\": \"" + e.getMessage() + "\"}").build();
+            return Response.status(Response.Status.FORBIDDEN).entity(ApiResponse.error(e.getMessage(), Response.Status.FORBIDDEN.getStatusCode())).build();
         } catch (Exception e) {
             logger.error("Login failed for user {}: {}", authRequestDTO.getEmail(), e.getMessage());
-            return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\": \"" + e.getMessage() + "\"}").build();
+            return Response.status(Response.Status.UNAUTHORIZED).entity(ApiResponse.error(e.getMessage(), Response.Status.UNAUTHORIZED.getStatusCode())).build();
         }
     }
 
@@ -58,21 +57,19 @@ public class AuthController {
         try {
             if (utilisateurService.checkNomUtilisateurExists(utilisateurDTO.getNomUtilisateur())) {
                 logger.warn("Registration failed: Username {} already exists.", utilisateurDTO.getNomUtilisateur());
-                return Response.status(Response.Status.CONFLICT).entity("{\"error\": \"Username already exists\"}").build();
+                return Response.status(Response.Status.CONFLICT).entity(ApiResponse.error("Username already exists", Response.Status.CONFLICT.getStatusCode())).build();
             }
             if (utilisateurService.checkEmailExists(utilisateurDTO.getEmail())) {
                 logger.warn("Registration failed: Email {} already exists.", utilisateurDTO.getEmail());
-                return Response.status(Response.Status.CONFLICT).entity("{\"error\": \"Email already exists\"}").build();
+                return Response.status(Response.Status.CONFLICT).entity(ApiResponse.error("Email already exists", Response.Status.CONFLICT.getStatusCode())).build();
             }
-            Response response = Response.ok(utilisateurService.createUtilisateur(utilisateurDTO, utilisateurDTO.getRoleCode())).build();
-            logger.info("User registered successfully: {}", utilisateurDTO.getNomUtilisateur());
-            return response;
+            return Response.ok(ApiResponse.success(utilisateurService.createUtilisateur(utilisateurDTO, utilisateurDTO.getRoleCode()))).build();
         } catch (IllegalArgumentException e) {
             logger.error("Registration failed for user {}: {}", utilisateurDTO.getNomUtilisateur(), e.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\": \"" + e.getMessage() + "\"}").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ApiResponse.error(e.getMessage(), Response.Status.BAD_REQUEST.getStatusCode())).build();
         } catch (Exception e) {
             logger.error("An unexpected error occurred during registration for user {}: {}", utilisateurDTO.getNomUtilisateur(), e.getMessage());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\": \"An unexpected error occurred\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error("An unexpected error occurred", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())).build();
         }
     }
 
@@ -83,12 +80,10 @@ public class AuthController {
     public Response changePassword(ChangePasswordRequestDTO requestDTO) {
         logger.debug("Received change password request for email: {}", requestDTO.getEmail());
         try {
-            Response response = Response.ok(authService.changePassword(requestDTO)).build();
-            logger.info("Password changed successfully for email: {}", requestDTO.getEmail());
-            return response;
+            return Response.ok(ApiResponse.success(authService.changePassword(requestDTO))).build();
         } catch (Exception e) {
             logger.error("Password change failed for email {}: {}", requestDTO.getEmail(), e.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\": \"" + e.getMessage() + "\"}").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ApiResponse.error(e.getMessage(), Response.Status.BAD_REQUEST.getStatusCode())).build();
         }
     }
 
@@ -99,12 +94,10 @@ public class AuthController {
     public Response refreshAccessToken(RefreshTokenRequestDTO requestDTO) {
         logger.debug("Received refresh token request.");
         try {
-            Response response = Response.ok(authService.refreshAccessToken(requestDTO.getRefreshToken())).build();
-            logger.info("Access token refreshed successfully.");
-            return response;
+            return Response.ok(ApiResponse.success(authService.refreshAccessToken(requestDTO.getRefreshToken()))).build();
         } catch (Exception e) {
             logger.error("Refresh token failed: {}", e.getMessage());
-            return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\": \"" + e.getMessage() + "\"}").build();
+            return Response.status(Response.Status.UNAUTHORIZED).entity(ApiResponse.error(e.getMessage(), Response.Status.UNAUTHORIZED.getStatusCode())).build();
         }
     }
 }
