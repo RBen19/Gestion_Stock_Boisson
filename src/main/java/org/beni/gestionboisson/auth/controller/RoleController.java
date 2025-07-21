@@ -4,6 +4,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.beni.gestionboisson.shared.response.ApiResponse;
 import org.beni.gestionboisson.auth.dto.RoleDTO;
 import org.beni.gestionboisson.auth.security.Secured;
 import org.beni.gestionboisson.auth.service.RoleService;
@@ -24,7 +25,7 @@ public class RoleController {
     @GET
     public Response getAllRoles() {
         logger.info("Getting all roles");
-        return Response.ok(roleService.getAllRoles()).build();
+        return Response.ok(ApiResponse.success(roleService.getAllRoles())).build();
     }
 
     @GET
@@ -33,10 +34,10 @@ public class RoleController {
         logger.info("Getting role by id: {}", id);
         RoleDTO roleDTO = roleService.getRoleById(id);
         if (roleDTO != null) {
-            return Response.ok(roleDTO).build();
+            return Response.ok(ApiResponse.success(roleDTO)).build();
         } else {
             logger.warn("Role with id {} not found", id);
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(ApiResponse.error("Role not found", Response.Status.NOT_FOUND.getStatusCode())).build();
         }
     }
 
@@ -45,7 +46,7 @@ public class RoleController {
         logger.info("Creating new role: {}", roleDTO);
         RoleDTO createdRole = roleService.createRole(roleDTO);
         logger.info("Role created: {}", createdRole);
-        return Response.status(Response.Status.CREATED).entity(createdRole).build();
+        return Response.status(Response.Status.CREATED).entity(ApiResponse.success(createdRole)).build();
     }
 
     @PUT
@@ -55,10 +56,10 @@ public class RoleController {
         try {
             RoleDTO updatedRole = roleService.updateRole(id, roleDTO);
             logger.info("Role updated: {}", updatedRole);
-            return Response.ok(updatedRole).build();
+            return Response.ok(ApiResponse.success(updatedRole)).build();
         } catch (RuntimeException e) {
             logger.error("Error updating role with id {}: {}", id, e.getMessage());
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(ApiResponse.error(e.getMessage(), Response.Status.NOT_FOUND.getStatusCode())).build();
         }
     }
 
