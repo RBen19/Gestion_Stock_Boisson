@@ -30,13 +30,12 @@ public class BoissonServiceImpl implements BoissonService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Categorie Code"));
 
         long count = boissonRepository.countByCategoryAndUnit(categorie.getCodeCategorie(), dto.getUniteDeMesure());
-        String nom = String.format("%s-%s-%03d", categorie.getCodeCategorie().substring(0, 3), dto.getUniteDeMesure(), count + 1);
+        String codeBoisson = String.format("%s-%s-%03d", categorie.getCodeCategorie().substring(0, 3), dto.getUniteDeMesure(), count + 1);
 
         Long maxId = boissonRepository.findMaxId().orElse(0L);
-        String codeBoisson = String.format("%s-%d--%s", categorie.getCodeCategorie().substring(0, 3), maxId + 1, dto.getUniteDeMesure());
+      //  String codeBoisson = String.format("%s-%d--%s", categorie.getCodeCategorie().substring(0, 3), maxId + 1, dto.getUniteDeMesure());
 
         Boisson boisson = BoissonMapper.toEntity(dto);
-        boisson.setNom(nom);
         boisson.setCodeBoisson(codeBoisson);
         boisson.setCategorie(categorie);
 
