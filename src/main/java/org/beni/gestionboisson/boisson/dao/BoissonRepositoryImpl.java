@@ -3,6 +3,7 @@ package org.beni.gestionboisson.boisson.dao;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import org.beni.gestionboisson.boisson.entities.Boisson;
 import org.beni.gestionboisson.boisson.repository.BoissonRepository;
 
@@ -27,12 +28,28 @@ public class BoissonRepositoryImpl implements BoissonRepository {
 
     @Override
     public Boisson save(Boisson boisson) {
-        if (boisson.getId() == null) {
-            em.persist(boisson);
-            return boisson;
-        } else {
-            return em.merge(boisson);
-        }
+            EntityTransaction transaction = em.getTransaction();
+
+            try {
+                transaction.begin();
+
+                if (boisson.getId() == null) {
+                    em.persist(boisson);
+                } else {
+                    boisson = em.merge(boisson);
+                }
+
+                transaction.commit();
+                return boisson;
+
+            } catch (Exception e) {
+                if (transaction.isActive()) {
+                    transaction.rollback();
+                }
+                throw new RuntimeException("Erreur lors de l'enregistrement de la boisson", e);
+            }
+
+
     }
 
     @Override
