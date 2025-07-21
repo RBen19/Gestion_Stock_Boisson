@@ -5,6 +5,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.beni.gestionboisson.auth.security.Secured;
+import org.beni.gestionboisson.boisson.database.seeders.BoissonSeeder;
+import org.beni.gestionboisson.shared.response.ApiResponse;
 import org.beni.gestionboisson.boisson.dto.BoissonDTO;
 import org.beni.gestionboisson.boisson.service.BoissonService;
 
@@ -17,19 +19,29 @@ public class BoissonController {
     @Inject
     private BoissonService boissonService;
 
+
     @POST
     public Response createBoisson(BoissonDTO boissonDTO) {
         try {
             BoissonDTO createdBoisson = boissonService.createBoisson(boissonDTO);
-            return Response.status(Response.Status.CREATED).entity(createdBoisson).build();
+            return Response.status(Response.Status.CREATED).entity(ApiResponse.success(createdBoisson)).build();
         } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(ApiResponse.error(e.getMessage(), Response.Status.BAD_REQUEST.getStatusCode())).build();
         }
+    }
+
+
+    @GET
+    @Path("/seed")
+    public Response seedBoissons() {
+      this.boissonService.seedBoissons();
+        return Response.status(Response.Status.OK).entity(ApiResponse.success("boisson seed ")).build();
+
     }
 
     @GET
     public Response getAllBoissons() {
-        return Response.ok(boissonService.getAllBoissons()).build();
+        return Response.ok(ApiResponse.success(boissonService.getAllBoissons())).build();
     }
 
     @GET
@@ -37,9 +49,9 @@ public class BoissonController {
     public Response getBoissonById(@PathParam("id") Long id) {
         BoissonDTO boissonDTO = boissonService.getBoissonById(id);
         if (boissonDTO != null) {
-            return Response.ok(boissonDTO).build();
+            return Response.ok(ApiResponse.success(boissonDTO)).build();
         } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(ApiResponse.error("Boisson not found", Response.Status.NOT_FOUND.getStatusCode())).build();
         }
     }
 }
