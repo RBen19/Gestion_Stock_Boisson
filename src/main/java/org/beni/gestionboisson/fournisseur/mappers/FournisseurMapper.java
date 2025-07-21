@@ -23,8 +23,8 @@ public class FournisseurMapper {
                 .numeroTelephone(entity.getNumeroTelephone())
                 .codeFournisseur(entity.getCodeFournisseur())
                 .status(entity.getStatus())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(entity.getUpdatedAt())
+              //  .createdAt(entity.getCreatedAt())
+              //  .updatedAt(entity.getUpdatedAt())
                 .build();
     }
 
