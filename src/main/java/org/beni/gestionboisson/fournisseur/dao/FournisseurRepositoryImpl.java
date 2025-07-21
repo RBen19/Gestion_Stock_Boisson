@@ -1,7 +1,9 @@
 package org.beni.gestionboisson.fournisseur.dao;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceContext;
 import org.beni.gestionboisson.fournisseur.entities.Fournisseur;
 import org.beni.gestionboisson.fournisseur.repository.FournisseurRepository;
@@ -12,7 +14,7 @@ import java.util.Optional;
 @ApplicationScoped
 public class FournisseurRepositoryImpl implements FournisseurRepository {
 
-    @PersistenceContext
+    @Inject
     private EntityManager em;
 
     @Override
@@ -30,11 +32,24 @@ public class FournisseurRepositoryImpl implements FournisseurRepository {
 
     @Override
     public Fournisseur save(Fournisseur fournisseur) {
-        if (fournisseur.getId() == null) {
-            em.persist(fournisseur);
+        EntityTransaction transaction = em.getTransaction();
+        try {
+            transaction.begin();
+
+            if (fournisseur.getId() == null) {
+                em.persist(fournisseur);
+            } else {
+                fournisseur = em.merge(fournisseur);
+            }
+
+            transaction.commit();
             return fournisseur;
-        } else {
-            return em.merge(fournisseur);
+
+        } catch (Exception e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw new RuntimeException("Erreur lors de l'enregistrement du fournisseur", e);
         }
     }
 
