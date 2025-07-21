@@ -8,6 +8,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.beni.gestionboisson.auth.security.Secured;
+import org.beni.gestionboisson.shared.response.ApiResponse;
 import org.beni.gestionboisson.boisson.service.CategorieService;
 
 @Path("/categories")
@@ -21,13 +22,13 @@ public class CategorieController {
 
     @GET
     public Response getAllCategories() {
-        return Response.ok(categorieService.getAllCategories()).build();
+        return Response.ok(ApiResponse.success(categorieService.getAllCategories())).build();
     }
 
     @GET
     @Path("/seed")
     public Response seedCategories() {
         categorieService.seedCategories();
-        return Response.ok("Categories seeded").build();
+        return Response.ok(ApiResponse.success("Categories seeded successfully")).build();
     }
 }
