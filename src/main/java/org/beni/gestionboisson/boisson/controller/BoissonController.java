@@ -43,15 +43,33 @@ public class BoissonController {
     public Response getAllBoissons() {
         return Response.ok(ApiResponse.success(boissonService.getAllBoissons())).build();
     }
+    @GET
+    @Path("/code-boisson/{codeBoisson}")
+    public Response getBoissonByCode(@PathParam("codeBoisson")String codeBoisson){
+        try {
+            BoissonDTO boissonDTO = boissonService.getBoissonByCode(codeBoisson);
+            return  Response.status(Response.Status.OK).entity(ApiResponse.success(boissonDTO)).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(ApiResponse.error("An error occurred while retrieving the boisson", 500))
+                    .build();
+        }
+    }
 
     @GET
     @Path("/{id}")
     public Response getBoissonById(@PathParam("id") Long id) {
-        BoissonDTO boissonDTO = boissonService.getBoissonById(id);
-        if (boissonDTO != null) {
-            return Response.ok(ApiResponse.success(boissonDTO)).build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).entity(ApiResponse.error("Boisson not found", Response.Status.NOT_FOUND.getStatusCode())).build();
-        }
+       try {
+           BoissonDTO boissonDTO = boissonService.getBoissonById(id);
+           if (boissonDTO != null) {
+               return Response.ok(ApiResponse.success(boissonDTO)).build();
+           } else {
+               return Response.status(Response.Status.NOT_FOUND).entity(ApiResponse.error("Boisson not found", Response.Status.NOT_FOUND.getStatusCode())).build();
+           }
+       } catch (Exception e) {
+           return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                   .entity(ApiResponse.error("An error occurred while retrieving the boisson", 500))
+                   .build();
+       }
     }
 }
