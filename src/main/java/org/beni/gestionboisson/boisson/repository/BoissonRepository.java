@@ -12,4 +12,5 @@ public interface BoissonRepository {
     void deleteById(Long id);
     long countByCategoryAndUnit(String categoryCode, String unit);
     Optional<Long> findMaxId();
+    Optional<Boisson> getBoissonByCode(String codeBoisson);
 }
