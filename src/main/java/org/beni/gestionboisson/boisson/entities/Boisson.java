@@ -26,8 +26,8 @@ public class Boisson {
     @Column(nullable = false, unique = true)
     private String nom;
 
-    @Column(nullable = false, unique = true)
-    private String codeCategorie;
+   // @Column(nullable = false, unique = true)
+  //  private String codeCategorie;
 
     @Column(nullable = false)
     private String uniteDeMesure;
