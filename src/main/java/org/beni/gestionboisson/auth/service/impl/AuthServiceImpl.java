@@ -94,12 +94,9 @@ public class AuthServiceImpl implements AuthService {
             }
 
             String newAccessToken = jwtUtil.generateAccessToken(utilisateur.getNomUtilisateur(), utilisateur.getRole().getCode(), utilisateur.getEmail());
-            String newRefreshToken = jwtUtil.generateRefreshToken(utilisateur.getNomUtilisateur());
 
-            utilisateur.setRefreshToken(newRefreshToken);
-            utilisateurRepository.save(utilisateur);
-
-            return new AuthResponseDTO(newAccessToken, newRefreshToken);
+            // Do not regenerate refresh token, use the existing one
+            return new AuthResponseDTO(newAccessToken, refreshToken);
         } catch (Exception e) {
             throw new RuntimeException("Invalid or expired refresh token.", e);
         }
