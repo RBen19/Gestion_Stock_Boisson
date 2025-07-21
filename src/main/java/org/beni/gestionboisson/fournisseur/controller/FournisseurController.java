@@ -7,6 +7,7 @@ import jakarta.ws.rs.core.Response;
 import org.beni.gestionboisson.auth.security.Secured;
 import org.beni.gestionboisson.fournisseur.dto.ChangeStatusDTO;
 import org.beni.gestionboisson.fournisseur.dto.CreateFournisseurDTO;
+import org.beni.gestionboisson.fournisseur.dto.FournisseurDTO;
 import org.beni.gestionboisson.fournisseur.dto.UpdateFournisseurDTO;
 import org.beni.gestionboisson.fournisseur.database.seeders.FournisseurSeeder;
 import org.beni.gestionboisson.fournisseur.service.FournisseurService;
@@ -42,9 +43,13 @@ public class FournisseurController {
     @Path("/{code}")
     public Response getFournisseurByCode(@PathParam("code") String code) {
         try {
-            return Response.ok(ApiResponse.success(fournisseurService.getFournisseurByCode(code))).build();
+            FournisseurDTO fournisseurDTO = fournisseurService.getFournisseurByCode(code);
+            if(fournisseurDTO==null){
+              return   Response.status(Response.Status.NOT_FOUND).entity("not found founisseur with this code").build();
+            }
+            return Response.ok(ApiResponse.success(fournisseurDTO)).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(ApiResponse.error(e.getMessage(), Response.Status.NOT_FOUND.getStatusCode())).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error(e.getMessage(), Response.Status.NOT_FOUND.getStatusCode())).build();
         }
     }
 
@@ -54,7 +59,7 @@ public class FournisseurController {
         try {
             return Response.ok(ApiResponse.success(fournisseurService.updateFournisseur(code, updateFournisseurDTO))).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(ApiResponse.error(e.getMessage(), Response.Status.BAD_REQUEST.getStatusCode())).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error(e.getMessage(), Response.Status.BAD_REQUEST.getStatusCode())).build();
         }
     }
 
@@ -65,7 +70,7 @@ public class FournisseurController {
             fournisseurService.changeStatusByCode(code, changeStatusDTO.isStatus());
             return Response.ok(ApiResponse.success("Status changed successfully")).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(ApiResponse.error(e.getMessage(), Response.Status.BAD_REQUEST.getStatusCode())).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error(e.getMessage(), Response.Status.BAD_REQUEST.getStatusCode())).build();
         }
     }
 
