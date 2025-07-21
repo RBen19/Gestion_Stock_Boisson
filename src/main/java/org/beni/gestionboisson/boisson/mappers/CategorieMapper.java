@@ -12,7 +12,7 @@ public class CategorieMapper {
         return CategorieDTO.builder()
                 .idCategorie(categorie.getIdCategorie())
                 .nom(categorie.getNom())
-                .codeCategorie(categorie.getCodeCategorie())
+                
                 .parentCategorieId(categorie.getParentCategorie() != null ? categorie.getParentCategorie().getIdCategorie() : null)
              //   .createdAt(categorie.getCreatedAt())
             //    .updatedAt(categorie.getUpdatedAt())
@@ -26,7 +26,7 @@ public class CategorieMapper {
         Categorie categorie = Categorie.builder()
                 .idCategorie(dto.getIdCategorie())
                 .nom(dto.getNom())
-                .codeCategorie(dto.getCodeCategorie())
+                
               //  .createdAt(dto.getCreatedAt())
               //  .updatedAt(dto.getUpdatedAt())
                 .build();
