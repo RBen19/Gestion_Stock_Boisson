@@ -25,7 +25,7 @@ public class FournisseurServiceImpl implements FournisseurService {
     @Inject
     private FournisseurRepository fournisseurRepository;
 
-    private final Slugify slg = Slugify.builder().build();
+    private final Slugify slg = new Slugify();
 
     @Override
     public FournisseurDTO createFournisseur(CreateFournisseurDTO dto) {
