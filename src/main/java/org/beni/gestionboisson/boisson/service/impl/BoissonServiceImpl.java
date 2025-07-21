@@ -105,4 +105,11 @@ public class BoissonServiceImpl implements BoissonService {
             }
         }
     }
+
+    @Override
+    public BoissonDTO getBoissonByCode(String codeBoisson) {
+      return boissonRepository.getBoissonByCode(codeBoisson)
+              .map(BoissonMapper::toDTO).orElse(null);
+
+    }
 }
