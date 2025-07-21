@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.NoResultException;
 import org.beni.gestionboisson.boisson.entities.Boisson;
 import org.beni.gestionboisson.boisson.repository.BoissonRepository;
 
@@ -69,4 +70,18 @@ public class BoissonRepositoryImpl implements BoissonRepository {
     public Optional<Long> findMaxId() {
         return Optional.ofNullable(em.createQuery("SELECT MAX(b.id) FROM Boisson b", Long.class).getSingleResult());
     }
+
+    @Override
+    public Optional<Boisson> getBoissonByCode(String codeBoisson) {
+        try {
+            Boisson boisson = em.createQuery(
+                            "SELECT b FROM Boisson b WHERE b.codeBoisson = :codeBoisson", Boisson.class)
+                    .setParameter("codeBoisson", codeBoisson)
+                    .getSingleResult();
+            return Optional.of(boisson);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
+    }
+
 }
