@@ -8,4 +8,5 @@ public interface BoissonService {
     BoissonDTO createBoisson(BoissonDTO dto);
     List<BoissonDTO> getAllBoissons();
     BoissonDTO getBoissonById(Long id);
+    void seedBoissons();
 }
