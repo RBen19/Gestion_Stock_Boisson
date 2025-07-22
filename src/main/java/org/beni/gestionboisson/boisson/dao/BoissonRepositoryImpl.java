@@ -59,10 +59,9 @@ public class BoissonRepositoryImpl implements BoissonRepository {
     }
 
     @Override
-    public long countByCategoryAndUnit(String categoryCode, String unit) {
-        return em.createQuery("SELECT COUNT(b) FROM Boisson b WHERE b.categorie.codeCategorie = :categoryCode AND b.uniteDeMesure = :unit", Long.class)
+    public long countByCategory(String categoryCode) {
+        return em.createQuery("SELECT COUNT(b) FROM Boisson b WHERE b.categorie.codeCategorie = :categoryCode", Long.class)
                 .setParameter("categoryCode", categoryCode)
-                .setParameter("unit", unit)
                 .getSingleResult();
     }
 
