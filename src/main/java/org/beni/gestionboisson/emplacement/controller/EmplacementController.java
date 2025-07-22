@@ -8,6 +8,10 @@ import org.beni.gestionboisson.emplacement.dto.EmplacementDTO;
 import org.beni.gestionboisson.emplacement.service.EmplacementService;
 import org.beni.gestionboisson.shared.response.ApiResponse;
 import org.beni.gestionboisson.auth.security.Secured;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.beni.gestionboisson.emplacement.exceptions.EmplacementNotFoundException;
+import org.beni.gestionboisson.emplacement.exceptions.DuplicateEmplacementCodeException;
 
 import java.util.List;
 
@@ -16,6 +20,8 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 public class EmplacementController {
 
+    private static final Logger logger = LoggerFactory.getLogger(EmplacementController.class);
+
     @Inject
     EmplacementService emplacementService;
 
@@ -23,8 +29,15 @@ public class EmplacementController {
     @Path("/seed")
     @Secured
     public Response seedEmplacements() {
-        emplacementService.seedEmplacements();
-        return Response.ok("Emplacements seeded successfully").build();
+        logger.info("Received request to seed emplacements.");
+        try {
+            emplacementService.seedEmplacements();
+            logger.info("Emplacements seeded successfully.");
+            return Response.ok(ApiResponse.success("Emplacements seeded successfully")).build();
+        } catch (Exception e) {
+            logger.error("An unexpected error occurred while seeding emplacements: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error("An unexpected error occurred", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())).build();
+        }
     }
 
     @POST
@@ -32,8 +45,18 @@ public class EmplacementController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createEmplacement(EmplacementDTO dto) {
-        EmplacementDTO createdEmplacement = emplacementService.createEmplacement(dto);
-        return Response.status(Response.Status.CREATED).entity(ApiResponse.success(createdEmplacement)).build();
+        logger.info("Received request to create emplacement: {}", dto.getNom());
+        try {
+            EmplacementDTO createdEmplacement = emplacementService.createEmplacement(dto);
+            logger.info("Emplacement created successfully: {}", createdEmplacement.getCodeEmplacement());
+            return Response.status(Response.Status.CREATED).entity(ApiResponse.success(createdEmplacement)).build();
+        } catch (DuplicateEmplacementCodeException e) {
+            logger.warn("Emplacement creation failed: {}", e.getMessage());
+            return Response.status(Response.Status.CONFLICT).entity(ApiResponse.error(e.getMessage(), Response.Status.CONFLICT.getStatusCode())).build();
+        } catch (Exception e) {
+            logger.error("An unexpected error occurred while creating emplacement: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error("An unexpected error occurred", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())).build();
+        }
     }
 
     @GET
@@ -41,10 +64,15 @@ public class EmplacementController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getAllEmplacements() {
-        List<EmplacementDTO> emplacements = emplacementService.getAllEmplacements();
-      //  return Response.status(Response.Status.BAD_REQUEST).entity(ApiResponse.error(e.getMessage(), Response.Status.BAD_REQUEST.getStatusCode())).build();
-
-        return Response.ok(ApiResponse.success(emplacements)).build();
+        logger.info("Received request to get all emplacements.");
+        try {
+            List<EmplacementDTO> emplacements = emplacementService.getAllEmplacements();
+            logger.info("Retrieved {} emplacements.", emplacements.size());
+            return Response.ok(ApiResponse.success(emplacements)).build();
+        } catch (Exception e) {
+            logger.error("An unexpected error occurred while retrieving all emplacements: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error("An unexpected error occurred", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())).build();
+        }
     }
 
     @GET
@@ -53,11 +81,18 @@ public class EmplacementController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getEmplacementByCode(@PathParam("code") String code) {
-        EmplacementDTO emplacement = emplacementService.getEmplacementByCode(code);
-        if (emplacement == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity(ApiResponse.error("not found emplacent with this code",404)).build();
+        logger.info("Received request to get emplacement by code: {}", code);
+        try {
+            EmplacementDTO emplacement = emplacementService.getEmplacementByCode(code);
+            logger.info("Emplacement found by code: {}", code);
+            return Response.status(Response.Status.OK).entity(ApiResponse.success(emplacement)).build();
+        } catch (EmplacementNotFoundException e) {
+            logger.warn("Emplacement with code {} not found: {}", code, e.getMessage());
+            return Response.status(Response.Status.NOT_FOUND).entity(ApiResponse.error(e.getMessage(), Response.Status.NOT_FOUND.getStatusCode())).build();
+        } catch (Exception e) {
+            logger.error("An unexpected error occurred while retrieving emplacement by code {}: {}", code, e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error("An unexpected error occurred", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())).build();
         }
-        return Response.status(Response.Status.OK).entity(ApiResponse.success(emplacement)).build();
     }
 
     @PUT
@@ -66,14 +101,21 @@ public class EmplacementController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateEmplacement(@PathParam("code") String code, EmplacementDTO dto) {
-        try{
+        logger.info("Received request to update emplacement with code {}: {}", code, dto.getNom());
+        try {
             EmplacementDTO updatedEmplacement = emplacementService.updateEmplacement(code, dto);
+            logger.info("Emplacement with code {} updated successfully.", code);
             return Response.status(Response.Status.OK).entity(ApiResponse.success(updatedEmplacement)).build();
+        } catch (EmplacementNotFoundException e) {
+            logger.warn("Emplacement with code {} not found for update: {}", code, e.getMessage());
+            return Response.status(Response.Status.NOT_FOUND).entity(ApiResponse.error(e.getMessage(), Response.Status.NOT_FOUND.getStatusCode())).build();
+        } catch (DuplicateEmplacementCodeException e) {
+            logger.warn("Emplacement update failed: {}", e.getMessage());
+            return Response.status(Response.Status.CONFLICT).entity(ApiResponse.error(e.getMessage(), Response.Status.CONFLICT.getStatusCode())).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(ApiResponse.error(e.getMessage(), Response.Status.BAD_REQUEST.getStatusCode())).build();
-
+            logger.error("An unexpected error occurred while updating emplacement with code {}: {}", code, e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error("An unexpected error occurred", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())).build();
         }
-
     }
 
     @DELETE
@@ -82,12 +124,17 @@ public class EmplacementController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response deleteEmplacement(@PathParam("code") String code) {
+        logger.info("Received request to delete emplacement with code: {}", code);
         try {
-
+            emplacementService.deleteEmplacement(code);
+            logger.info("Emplacement with code {} deleted successfully.", code);
+            return Response.noContent().build();
+        } catch (EmplacementNotFoundException e) {
+            logger.warn("Emplacement with code {} not found for deletion: {}", code, e.getMessage());
+            return Response.status(Response.Status.NOT_FOUND).entity(ApiResponse.error(e.getMessage(), Response.Status.NOT_FOUND.getStatusCode())).build();
         } catch (Exception e) {
-
+            logger.error("An unexpected error occurred while deleting emplacement with code {}: {}", code, e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error("An unexpected error occurred", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())).build();
         }
-        emplacementService.deleteEmplacement(code);
-        return Response.noContent().entity( ApiResponse.success("Emplacement deleted successfully") ).build();
     }
 }
