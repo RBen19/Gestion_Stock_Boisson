@@ -2,30 +2,17 @@ package org.beni.gestionboisson.uniteDeMesure.mappers;
 
 import org.beni.gestionboisson.uniteDeMesure.dto.UniteDeMesureDTO;
 import org.beni.gestionboisson.uniteDeMesure.entities.UniteDeMesure;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.factory.Mappers;
 
-public class UniteDeMesureMapper {
+@Mapper
+public interface UniteDeMesureMapper {
 
-    public static UniteDeMesureDTO toDTO(UniteDeMesure uniteDeMesure) {
-        if (uniteDeMesure == null) {
-            return null;
-        }
-        return UniteDeMesureDTO.builder()
-                .id(uniteDeMesure.getId())
-                .code(uniteDeMesure.getCode())
-                .libelle(uniteDeMesure.getLibelle())
-                .description(uniteDeMesure.getDescription())
-                .build();
-    }
+    UniteDeMesureMapper INSTANCE = Mappers.getMapper(UniteDeMesureMapper.class);
 
-    public static UniteDeMesure toEntity(UniteDeMesureDTO dto) {
-        if (dto == null) {
-            return null;
-        }
-        return UniteDeMesure.builder()
-                .id(dto.getId())
-                .code(dto.getCode())
-                .libelle(dto.getLibelle())
-                .description(dto.getDescription())
-                .build();
-    }
+    UniteDeMesureDTO toDto(UniteDeMesure uniteDeMesure);
+    UniteDeMesure toEntity(UniteDeMesureDTO uniteDeMesureDTO);
+
+    void updateEntityFromDto(UniteDeMesureDTO dto, @MappingTarget UniteDeMesure entity);
 }
