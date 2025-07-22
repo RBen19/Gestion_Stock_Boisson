@@ -8,6 +8,10 @@ import org.beni.gestionboisson.boisson.entities.Categorie;
 import org.beni.gestionboisson.boisson.mappers.CategorieMapper;
 import org.beni.gestionboisson.boisson.repository.CategorieRepository;
 import org.beni.gestionboisson.boisson.service.CategorieService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.beni.gestionboisson.boisson.exceptions.CategoryNotFoundException;
+import org.beni.gestionboisson.boisson.exceptions.InvalidBoissonDataException;
 
 import java.text.Normalizer;
 import java.util.List;
@@ -17,11 +21,14 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class CategorieServiceImpl implements CategorieService {
 
+    private static final Logger logger = LoggerFactory.getLogger(CategorieServiceImpl.class);
+
     @Inject
     private CategorieRepository categorieRepository;
 
     @Override
     public List<CategorieDTO> getAllCategories() {
+        logger.info("Fetching all categories.");
         return categorieRepository.findAll().stream()
                 .map(CategorieMapper::toDTO)
                 .collect(Collectors.toList());
@@ -29,14 +36,19 @@ public class CategorieServiceImpl implements CategorieService {
 
     @Override
     public CategorieDTO getCategorieById(Long id) {
+        logger.info("Fetching category by ID: {}", id);
         return categorieRepository.findById(id)
                 .map(CategorieMapper::toDTO)
-                .orElse(null);
+                .orElseThrow(() -> {
+                    logger.warn("Category with ID {} not found.", id);
+                    return new CategoryNotFoundException("Category not found with ID: " + id);
+                });
     }
 
     @Override
     @Transactional
     public CategorieDTO createCategorie(CategorieDTO categorieDTO) {
+        logger.info("Attempting to create category with name: {}", categorieDTO.getNom());
         String baseCode = generateSlug(categorieDTO.getNom());
         String uniqueCode = generateUniqueCode(baseCode);
 
@@ -45,18 +57,27 @@ public class CategorieServiceImpl implements CategorieService {
 
         if (categorieDTO.getParentCategorieId() != null) {
             Categorie parent = categorieRepository.findById(categorieDTO.getParentCategorieId())
-                    .orElseThrow(() -> new IllegalArgumentException("Parent category not found"));
+                    .orElseThrow(() -> {
+                        logger.error("Parent category with ID {} not found.", categorieDTO.getParentCategorieId());
+                        return new CategoryNotFoundException("Parent category not found");
+                    });
             categorie.setParentCategorie(parent);
         }
 
-        return CategorieMapper.toDTO(categorieRepository.save(categorie));
+        Categorie createdCategorie = categorieRepository.save(categorie);
+        logger.info("Category created successfully with ID: {}", createdCategorie.getIdCategorie());
+        return CategorieMapper.toDTO(createdCategorie);
     }
 
     @Override
     @Transactional
     public CategorieDTO updateCategorie(Long id, CategorieDTO categorieDTO) {
+        logger.info("Attempting to update category with ID: {}", id);
         Categorie existingCategorie = categorieRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+                .orElseThrow(() -> {
+                    logger.error("Category with ID {} not found for update.", id);
+                    return new CategoryNotFoundException("Category not found");
+                });
 
         existingCategorie.setNom(categorieDTO.getNom());
 
@@ -69,31 +90,47 @@ public class CategorieServiceImpl implements CategorieService {
 
         if (categorieDTO.getParentCategorieId() != null) {
             Categorie parent = categorieRepository.findById(categorieDTO.getParentCategorieId())
-                    .orElseThrow(() -> new IllegalArgumentException("Parent category not found"));
+                    .orElseThrow(() -> {
+                        logger.error("Parent category with ID {} not found for update.", categorieDTO.getParentCategorieId());
+                        return new CategoryNotFoundException("Parent category not found");
+                    });
             existingCategorie.setParentCategorie(parent);
         } else {
             existingCategorie.setParentCategorie(null);
         }
 
-        return CategorieMapper.toDTO(categorieRepository.save(existingCategorie));
+        Categorie updatedCategorie = categorieRepository.save(existingCategorie);
+        logger.info("Category with ID {} updated successfully.", updatedCategorie.getIdCategorie());
+        return CategorieMapper.toDTO(updatedCategorie);
     }
 
     @Override
     @Transactional
     public void deleteCategorie(Long id) {
+        logger.info("Attempting to delete category with ID: {}", id);
+        if (!categorieRepository.findById(id).isPresent()) {
+            logger.error("Category with ID {} not found for deletion.", id);
+            throw new CategoryNotFoundException("Category not found with ID: " + id);
+        }
         categorieRepository.deleteById(id);
+        logger.info("Category with ID {} deleted successfully.", id);
     }
 
     @Override
     public CategorieDTO getCategorieByCode(String codeCategorie) {
+        logger.info("Fetching category by code: {}", codeCategorie);
         return categorieRepository.findByCode(codeCategorie)
                 .map(CategorieMapper::toDTO)
-                .orElse(null);
+                .orElseThrow(() -> {
+                    logger.warn("Category with code {} not found.", codeCategorie);
+                    return new CategoryNotFoundException("Category not found with code: " + codeCategorie);
+                });
     }
 
     @Override
     @Transactional
     public void seedCategories() {
+        logger.info("Starting category seeding process.");
         // 🧊 1. Boissons non alcoolisées (softs)
         Categorie nonAlcoolisee = createCategory("Boissons non alcoolisées", null);
 
@@ -163,6 +200,7 @@ public class CategorieServiceImpl implements CategorieService {
         createCategory("Pastis / Anisé", aperitifs);
         createCategory("Liqueurs", aperitifs);
         createCategory("Amers, bitters", aperitifs);
+        logger.info("Category seeding process completed.");
     }
 
     private Categorie createCategory(String name, Categorie parent) {
@@ -174,7 +212,9 @@ public class CategorieServiceImpl implements CategorieService {
             categorie.setNom(name);
             categorie.setCodeCategorie(uniqueCode);
             categorie.setParentCategorie(parent);
-            return categorieRepository.save(categorie);
+            Categorie createdCategory = categorieRepository.save(categorie);
+            logger.debug("Seeded category: {}", createdCategory.getNom());
+            return createdCategory;
         });
     }
 
