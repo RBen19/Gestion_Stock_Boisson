@@ -16,7 +16,7 @@ public class BoissonDTO {
    // private String nom;
     private String nom;
     private String codeBoisson;
-    private String uniteDeMesure;
+    
     private String codeCategorie;
   //  private Instant createdAt;
   //  private Instant updatedAt;
