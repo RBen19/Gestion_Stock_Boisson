@@ -7,9 +7,13 @@ import org.beni.gestionboisson.auth.dto.UtilisateurDTO;
 import org.beni.gestionboisson.auth.entities.Role;
 import org.beni.gestionboisson.auth.repository.RoleRepository;
 import org.beni.gestionboisson.auth.service.UtilisateurService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 public class Seeder {
+
+    private static final Logger logger = LoggerFactory.getLogger(Seeder.class);
 
     @Inject
     private RoleRepository roleRepository;
@@ -30,7 +34,7 @@ public class Seeder {
             adminRole.setLibelle("Administrateur");
             adminRole.setStatus(true);
             roleRepository.save(adminRole);
-            System.out.println("Seeded ADMIN role.");
+            logger.info("Seeded ADMIN role.");
         }
     }
 
@@ -41,7 +45,7 @@ public class Seeder {
             utilisateurDTO.setEmail("rben19@example.com");
             utilisateurDTO.setPassword("password123"); // This will be hashed by the service
             utilisateurService.createUtilisateur(utilisateurDTO, "ADMIN");
-            System.out.println("Seeded user rben19.");
+            logger.info("Seeded user rben19.");
         }
     }
 }
