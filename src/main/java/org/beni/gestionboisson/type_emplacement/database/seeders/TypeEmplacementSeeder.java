@@ -6,9 +6,13 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.beni.gestionboisson.type_emplacement.dto.TypeEmplacementDTO;
 import org.beni.gestionboisson.type_emplacement.service.TypeEmplacementService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 public class TypeEmplacementSeeder {
+
+    private static final Logger logger = LoggerFactory.getLogger(TypeEmplacementSeeder.class);
 
     @Inject
     TypeEmplacementService typeEmplacementService;
@@ -25,7 +29,7 @@ public class TypeEmplacementSeeder {
             typeEmplacementService.createTypeEmplacement(TypeEmplacementDTO.builder().code("DISPLAY").libelle("Présentoir").description("Zone d'exposition des produits").build());
             typeEmplacementService.createTypeEmplacement(TypeEmplacementDTO.builder().code("RECEIVING").libelle("Réception").description("Zone de réception des marchandises").build());
             typeEmplacementService.createTypeEmplacement(TypeEmplacementDTO.builder().code("SHIPPING").libelle("Expédition").description("Zone d'expédition des marchandises").build());
-            System.out.println("TypeEmplacements seeded.");
+            logger.info("TypeEmplacements seeded.");
         }
     }
 }
