@@ -4,10 +4,11 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.beni.gestionboisson.shared.response.ApiResponse;
 import org.beni.gestionboisson.auth.dto.RoleDTO;
+import org.beni.gestionboisson.auth.exceptions.RoleNotFoundException;
 import org.beni.gestionboisson.auth.security.Secured;
 import org.beni.gestionboisson.auth.service.RoleService;
+import org.beni.gestionboisson.shared.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,9 +58,12 @@ public class RoleController {
             RoleDTO updatedRole = roleService.updateRole(id, roleDTO);
             logger.info("Role updated: {}", updatedRole);
             return Response.ok(ApiResponse.success(updatedRole)).build();
-        } catch (RuntimeException e) {
+        } catch (RoleNotFoundException e) {
             logger.error("Error updating role with id {}: {}", id, e.getMessage());
             return Response.status(Response.Status.NOT_FOUND).entity(ApiResponse.error(e.getMessage(), Response.Status.NOT_FOUND.getStatusCode())).build();
+        } catch (Exception e) {
+            logger.error("An unexpected error occurred while updating role with id {}: {}", id, e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error("An unexpected error occurred", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())).build();
         }
     }
 
@@ -67,8 +71,16 @@ public class RoleController {
     @Path("/{id}")
     public Response deleteRole(@PathParam("id") Long id) {
         logger.info("Deleting role with id: {}", id);
-        roleService.deleteRole(id);
-        logger.info("Role with id {} deleted", id);
-        return Response.noContent().build();
+        try {
+            roleService.deleteRole(id);
+            logger.info("Role with id {} deleted", id);
+            return Response.noContent().build();
+        } catch (RoleNotFoundException e) {
+            logger.error("Error deleting role with id {}: {}", id, e.getMessage());
+            return Response.status(Response.Status.NOT_FOUND).entity(ApiResponse.error(e.getMessage(), Response.Status.NOT_FOUND.getStatusCode())).build();
+        } catch (Exception e) {
+            logger.error("An unexpected error occurred while deleting role with id {}: {}", id, e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error("An unexpected error occurred", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())).build();
+        }
     }
 }
