@@ -15,7 +15,7 @@ public class BoissonMapper {
                 .nom(boisson.getNom())
                 .codeBoisson(boisson.getCodeBoisson())
                // .codeCategorie(boisson.getCodeCategorie())
-                .uniteDeMesure(boisson.getUniteDeMesure())
+                
                 .codeCategorie(boisson.getCategorie().getCodeCategorie())
               //  .idCategorie(boisson.getCategorie() != null ? boisson.getCategorie().getIdCategorie() : null)
                // .createdAt(boisson.getCreatedAt())
@@ -32,7 +32,7 @@ public class BoissonMapper {
                 .nom(dto.getNom())
                 .codeBoisson(dto.getCodeBoisson())
               //  .codeCategorie(dto.getCodeCategorie())
-                .uniteDeMesure(dto.getUniteDeMesure())
+                
                // .createdAt(dto.getCreatedAt())
            //     .updatedAt(dto.getUpdatedAt())
                 .build();
