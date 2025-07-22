@@ -1,17 +1,21 @@
 package org.beni.gestionboisson.type_emplacement.dao;
-
+import com.github.slugify.Slugify;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import org.beni.gestionboisson.type_emplacement.entities.TypeEmplacement;
 import org.beni.gestionboisson.type_emplacement.repository.TypeEmplacementRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
-import com.github.slugify.Slugify;
+
 @ApplicationScoped
 public class TypeEmplacementRepositoryImpl implements TypeEmplacementRepository {
+
+    private static final Logger logger = LoggerFactory.getLogger(TypeEmplacementRepositoryImpl.class);
 
     @Inject
     private EntityManager em;
@@ -52,7 +56,7 @@ public class TypeEmplacementRepositoryImpl implements TypeEmplacementRepository 
             if (transaction.isActive()) {
                 transaction.rollback();
             }
-            System.out.println(e.getMessage());
+            logger.error("Error saving type emplacement: {}", e.getMessage());
             throw new RuntimeException("Erreur lors de l'enregistrement du type d'emplacement", e);
         }
     }
