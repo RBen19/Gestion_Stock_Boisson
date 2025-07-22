@@ -10,7 +10,7 @@ public interface BoissonRepository {
     Optional<Boisson> findById(Long id);
     Boisson save(Boisson boisson);
     void deleteById(Long id);
-    long countByCategoryAndUnit(String categoryCode, String unit);
+    long countByCategory(String categoryCode);
     Optional<Long> findMaxId();
     Optional<Boisson> getBoissonByCode(String codeBoisson);
 }
