@@ -29,8 +29,7 @@ public class Boisson {
    // @Column(nullable = false, unique = true)
   //  private String codeCategorie;
 
-    @Column(nullable = false)
-    private String uniteDeMesure;
+    
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idCategorie", referencedColumnName = "idCategorie")
