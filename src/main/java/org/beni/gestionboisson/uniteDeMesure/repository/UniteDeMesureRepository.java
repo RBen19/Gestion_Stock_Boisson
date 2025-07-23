@@ -11,4 +11,6 @@ public interface UniteDeMesureRepository {
     Optional<UniteDeMesure> findByCode(String code);
     UniteDeMesure save(UniteDeMesure uniteDeMesure);
     void deleteById(Long id);
+
+    Optional<UniteDeMesure> findByLibelle(String libelle);
 }

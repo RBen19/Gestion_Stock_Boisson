@@ -62,8 +62,10 @@ public class UniteDeMesureRepositoryImpl implements UniteDeMesureRepository {
     @Override
     public UniteDeMesure save(UniteDeMesure uniteDeMesure) {
         EntityTransaction transaction = em.getTransaction();
+
         try {
             transaction.begin();
+
             if (uniteDeMesure.getId() == null) {
                 em.persist(uniteDeMesure);
                 logger.info("Persisting new UniteDeMesure with code: {}", uniteDeMesure.getCode());
@@ -71,37 +73,44 @@ public class UniteDeMesureRepositoryImpl implements UniteDeMesureRepository {
                 uniteDeMesure = em.merge(uniteDeMesure);
                 logger.info("Merging existing UniteDeMesure with ID: {}", uniteDeMesure.getId());
             }
+
             transaction.commit();
             logger.info("UniteDeMesure saved successfully with ID: {}", uniteDeMesure.getId());
             return uniteDeMesure;
+
         } catch (Exception e) {
             if (transaction.isActive()) {
                 transaction.rollback();
-                logger.warn("Transaction rolled back due to error saving UniteDeMesure.");
+                logger.error("Transaction rolled back while saving UniteDeMesure with code: {}", uniteDeMesure.getCode(), e);
             }
-            logger.error("Error saving UniteDeMesure: {}", e.getMessage());
-            throw new RuntimeException("Error saving UniteDeMesure", e);
+            throw new RuntimeException("Erreur lors de l'enregistrement de l'unité de mesure", e);
         }
     }
 
     @Override
     public void deleteById(Long id) {
         logger.info("Attempting to delete UniteDeMesure with ID: {}", id);
-        EntityTransaction transaction = em.getTransaction();
+        findById(id).ifPresent(uniteDeMesure -> {
+            em.remove(uniteDeMesure);
+            logger.info("UniteDeMesure with ID: {} removed successfully.", id);
+        });
+    }
+
+    @Override
+    public Optional<UniteDeMesure> findByLibelle(String libelle) {
+        logger.info("Attempting to find UniteDeMesure by code: {}", libelle);
         try {
-            transaction.begin();
-            findById(id).ifPresent(uniteDeMesure -> {
-                em.remove(uniteDeMesure);
-                logger.info("UniteDeMesure with ID: {} removed successfully.", id);
-            });
-            transaction.commit();
+            UniteDeMesure uniteDeMesure = em.createQuery("SELECT u FROM UniteDeMesure u WHERE u.libelle = :libelle", UniteDeMesure.class)
+                    .setParameter("libelle", libelle)
+                    .getSingleResult();
+            logger.info("Found UniteDeMesure with code: {}", libelle);
+            return Optional.of(uniteDeMesure);
+        } catch (NoResultException e) {
+            logger.warn("UniteDeMesure with code: {} not found.", libelle);
+            return Optional.empty();
         } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-                logger.warn("Transaction rolled back due to error deleting UniteDeMesure with ID: {}", id);
-            }
-            logger.error("Error deleting UniteDeMesure with ID {}: {}", id, e.getMessage());
-            throw new RuntimeException("Error deleting UniteDeMesure", e);
+            logger.error("Error finding UniteDeMesure by code {}: {}", libelle, e.getMessage());
+            throw new RuntimeException("Error finding UniteDeMesure by code", e);
         }
     }
 }
