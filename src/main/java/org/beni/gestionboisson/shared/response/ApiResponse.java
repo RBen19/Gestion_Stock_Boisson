@@ -32,4 +32,20 @@ public class ApiResponse<T> {
                 .timestamp(System.currentTimeMillis())
                 .build();
     }
+    public static <T> ApiResponse<T> errorConflict(String message) {
+        return ApiResponse.<T>builder()
+                .data(null)
+                .message(message)
+                .status(409)
+                .timestamp(System.currentTimeMillis())
+                .build();
+    }
+    public static <T> ApiResponse<T> notFound(String message) {
+        return ApiResponse.<T>builder()
+                .data(null)
+                .message(message)
+                .status(404)
+                .timestamp(System.currentTimeMillis())
+                .build();
+    }
 }
