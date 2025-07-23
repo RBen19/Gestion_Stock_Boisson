@@ -21,7 +21,7 @@ public class Seeder {
     }
 
     private void seedUniteDeMesure() {
-        if (uniteDeMesureService.getAllUniteDeMesures().isEmpty()) {
+        if (uniteDeMesureService.getAllUnitesDeMesure().isEmpty()) {
             uniteDeMesureService.seedUniteDeMesure();
             logger.info("Seeded UniteDeMesure.");
         }
