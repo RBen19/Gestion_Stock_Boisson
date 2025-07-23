@@ -2,17 +2,45 @@ package org.beni.gestionboisson.uniteDeMesure.mappers;
 
 import org.beni.gestionboisson.uniteDeMesure.dto.UniteDeMesureDTO;
 import org.beni.gestionboisson.uniteDeMesure.entities.UniteDeMesure;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
 
-@Mapper
-public interface UniteDeMesureMapper {
+public class UniteDeMesureMapper {
 
-    UniteDeMesureMapper INSTANCE = Mappers.getMapper(UniteDeMesureMapper.class);
+    public static UniteDeMesureDTO toDto(UniteDeMesure uniteDeMesure) {
+        if (uniteDeMesure == null) {
+            return null;
+        }
+        return UniteDeMesureDTO.builder()
+                .id(uniteDeMesure.getId())
+                .code(uniteDeMesure.getCode())
+                .libelle(uniteDeMesure.getLibelle())
+                .description(uniteDeMesure.getDescription())
+                .build();
+    }
 
-    UniteDeMesureDTO toDto(UniteDeMesure uniteDeMesure);
-    UniteDeMesure toEntity(UniteDeMesureDTO uniteDeMesureDTO);
+    public static UniteDeMesure toEntity(UniteDeMesureDTO uniteDeMesureDTO) {
+        if (uniteDeMesureDTO == null) {
+            return null;
+        }
+        return UniteDeMesure.builder()
+                .id(uniteDeMesureDTO.getId())
+                .code(uniteDeMesureDTO.getCode())
+                .libelle(uniteDeMesureDTO.getLibelle())
+                .description(uniteDeMesureDTO.getDescription())
+                .build();
+    }
 
-    void updateEntityFromDto(UniteDeMesureDTO dto, @MappingTarget UniteDeMesure entity);
+    public static void updateEntityFromDto(UniteDeMesureDTO dto, UniteDeMesure entity) {
+        if (dto == null || entity == null) {
+            return;
+        }
+        if (dto.getCode() != null) {
+            entity.setCode(dto.getCode());
+        }
+        if (dto.getLibelle() != null) {
+            entity.setLibelle(dto.getLibelle());
+        }
+        if (dto.getDescription() != null) {
+            entity.setDescription(dto.getDescription());
+        }
+    }
 }
