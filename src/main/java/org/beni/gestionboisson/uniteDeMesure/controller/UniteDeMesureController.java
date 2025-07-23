@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.util.List;
 
-@Path("/unitesdemesure")
+@Path("/unites-de-mesure")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UniteDeMesureController {
@@ -25,6 +25,22 @@ public class UniteDeMesureController {
 
     @Inject
     private UniteDeMesureService uniteDeMesureService;
+    @POST
+    @Path("/seed")
+    public Response seedUniteDeMesure() {
+        try {
+            logger.info("Received request to seed unites de mesure.");
+            uniteDeMesureService.seedUniteDeMesure();
+            logger.info("Unites de mesure successfully seeded.");
+            return Response.status(Response.Status.OK).entity(ApiResponse.success("Unites de mesure seed successful")).build();
+
+        } catch (Exception e) {
+            logger.error("An error occurred while seeding unites de mesure: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(ApiResponse.error("An error occurred while seeding the unites de mesure", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
+        }
+    }
 
     @GET
     public Response getAllUnitesDeMesure() {
