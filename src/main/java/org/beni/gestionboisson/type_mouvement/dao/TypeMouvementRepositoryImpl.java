@@ -1,7 +1,9 @@
 package org.beni.gestionboisson.type_mouvement.dao;
 
+//import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.NoResultException;
@@ -38,8 +40,8 @@ public class TypeMouvementRepositoryImpl implements TypeMouvementRepository {
     @Override
     public Optional<TypeMouvement> findByCode(String code) {
         try {
-            return Optional.of(em.createQuery("SELECT tm FROM TypeMouvement tm WHERE tm.code = :code", TypeMouvement.class)
-                    .setParameter("code", code)
+            return Optional.of(em.createQuery("SELECT tm FROM TypeMouvement tm WHERE LOWER(tm.code) = :code", TypeMouvement.class)
+                    .setParameter("code", code.toLowerCase())
                     .getSingleResult());
         } catch (NoResultException e) {
             return Optional.empty();
