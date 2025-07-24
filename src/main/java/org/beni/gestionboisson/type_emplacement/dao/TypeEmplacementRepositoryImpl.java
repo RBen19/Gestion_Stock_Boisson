@@ -1,7 +1,9 @@
 package org.beni.gestionboisson.type_emplacement.dao;
 import com.github.slugify.Slugify;
+//import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import org.beni.gestionboisson.type_emplacement.entities.TypeEmplacement;
