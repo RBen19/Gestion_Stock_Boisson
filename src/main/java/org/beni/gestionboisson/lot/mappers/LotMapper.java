@@ -35,6 +35,7 @@ public class LotMapper {
                 .dateLimiteConsommation(lotDTO.getDateLimiteConsommation())
                 .quantiteInitiale(lotDTO.getQuantiteInitiale())
                 .quantiteActuelle(lotDTO.getQuantiteActuelle())
+                .codeEmplacementActuel(lotDTO.getCodeEmplacementActuel())
                 .build();
     }
 }
