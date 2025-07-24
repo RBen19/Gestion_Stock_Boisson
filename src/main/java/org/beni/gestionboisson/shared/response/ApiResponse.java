@@ -48,4 +48,12 @@ public class ApiResponse<T> {
                 .timestamp(System.currentTimeMillis())
                 .build();
     }
+    public static <T> ApiResponse<T> badRequest(String message) {
+        return ApiResponse.<T>builder()
+                .data(null)
+                .message(message)
+                .status(400)
+                .timestamp(System.currentTimeMillis())
+                .build();
+    }
 }
