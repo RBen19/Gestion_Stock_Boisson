@@ -3,6 +3,7 @@ package org.beni.gestionboisson.fournisseur.service.impl;
 import com.github.slugify.Slugify;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 import org.beni.gestionboisson.fournisseur.dao.FournisseurRepositoryImpl;
 import org.beni.gestionboisson.fournisseur.dto.CreateFournisseurDTO;
