@@ -1,8 +1,10 @@
 package org.beni.gestionboisson.uniteDeMesure.database.seeders;
 
 import jakarta.annotation.PostConstruct;
+//import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import org.beni.gestionboisson.uniteDeMesure.service.UniteDeMesureService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
