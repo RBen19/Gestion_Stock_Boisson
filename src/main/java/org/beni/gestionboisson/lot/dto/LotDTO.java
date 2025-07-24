@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -14,10 +15,13 @@ import java.util.Date;
 @AllArgsConstructor
 public class LotDTO {
     private String boissonCode;
-    private Instant dateAcquisition;
-    private Instant dateLimiteConsommation;
+    private LocalDate dateAcquisition;
+    private LocalDate dateLimiteConsommation;
     private Double quantiteInitiale;
     private Double quantiteActuelle;
     private String fournisseurCode;
     private String typeLotStatusCode;
+    private String utilisateurEmail;
+    private String notes;
+    private String codeEmplacementDestination;
 }
