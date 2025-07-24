@@ -1,9 +1,11 @@
 package org.beni.gestionboisson.auth.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
@@ -17,8 +19,8 @@ import org.slf4j.LoggerFactory;
 
 @Provider
 @Secured
-@ApplicationScoped
 @Priority(Priorities.AUTHENTICATION)
+@ApplicationScoped
 public class JwtFilter implements ContainerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
@@ -42,7 +44,8 @@ public class JwtFilter implements ContainerRequestFilter {
         String accessToken = authHeader.substring("Bearer".length()).trim();
 
         try {
-            jwtUtil.validateAccessToken(accessToken);
+            Claims claims = jwtUtil.validateAccessToken(accessToken);
+            TokenContext.setClaims(claims);
             logger.info("JWT Filter: Access token validated successfully.");
         } catch (ExpiredJwtException e) {
             logger.warn("JWT Filter: Access token expired. Attempting to refresh.");
@@ -56,6 +59,8 @@ public class JwtFilter implements ContainerRequestFilter {
 
             try {
                 AuthResponseDTO newTokens = authService.refreshAccessToken(refreshToken);
+                Claims refreshClaims = jwtUtil.validateAccessToken(newTokens.getAccessToken());
+                TokenContext.setClaims(refreshClaims);
                 // Update the Authorization header with the new access token for the current request
                 requestContext.getHeaders().putSingle(HttpHeaders.AUTHORIZATION, "Bearer " + newTokens.getAccessToken());
                 logger.info("JWT Filter: Access token refreshed successfully. New access token set in request header.");
