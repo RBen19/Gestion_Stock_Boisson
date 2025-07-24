@@ -3,6 +3,7 @@ package org.beni.gestionboisson.emplacement.database.seeders;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import org.beni.gestionboisson.emplacement.dto.EmplacementDTO;
 import org.beni.gestionboisson.emplacement.service.EmplacementService;
 import org.beni.gestionboisson.type_emplacement.controller.TypeEmplacementController;
