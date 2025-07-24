@@ -2,6 +2,7 @@ package org.beni.gestionboisson.boisson.service.impl;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 import org.beni.gestionboisson.boisson.dto.CategorieDTO;
 import org.beni.gestionboisson.boisson.entities.Categorie;
