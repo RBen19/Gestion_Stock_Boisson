@@ -31,6 +31,7 @@ public class EmplacementSeeder {
             emplacementService.createEmplacement(EmplacementDTO.builder().nom("Zone Réception").codeTypeEmplacement("RECEIVING").build());
             emplacementService.createEmplacement(EmplacementDTO.builder().nom("Stock Principal").codeTypeEmplacement("STOCK").build());
             emplacementService.createEmplacement(EmplacementDTO.builder().nom("Quai Expédition").codeTypeEmplacement("SHIPPING").build());
+            emplacementService.createEmplacement(EmplacementDTO.builder().nom("Zone retour fournisseur").codeTypeEmplacement("retour-fournisseur").build());
             logger.info("Emplacements seeded.");
         }
     }
