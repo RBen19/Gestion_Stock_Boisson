@@ -16,7 +16,9 @@ import org.beni.gestionboisson.lot.dto.LotStatusUpdateDTO;
 import org.beni.gestionboisson.lot.entities.Lot;
 import org.beni.gestionboisson.lot.exceptions.DuplicateLotNumeroException;
 import org.beni.gestionboisson.lot.exceptions.InvalidLotRequestException;
+import org.beni.gestionboisson.lot.exceptions.LotCreationException;
 import org.beni.gestionboisson.lot.exceptions.LotNotFoundException;
+import org.beni.gestionboisson.lot.exceptions.MouvementReceptionException;
 import org.beni.gestionboisson.lot.mappers.LotMapper;
 import org.beni.gestionboisson.lot.repository.LotRepository;
 import org.beni.gestionboisson.mouvement.service.MouvementService;
@@ -60,40 +62,68 @@ public class LotServiceImpl implements org.beni.gestionboisson.lot.service.LotSe
     @Override
     @Transactional
     public LotResponseDTO createLot(LotDTO lotDTO) {
-        logger.info("Attempting to create new lot with Boisson Code: " + lotDTO.getBoissonCode());
+        logger.info("Début de la création d'un nouveau lot pour la boisson code : " + lotDTO.getBoissonCode());
 
-        // Validate Boisson
-        Boisson boisson = boissonRepository.getBoissonByCode(lotDTO.getBoissonCode())
-                .orElseThrow(() -> new InvalidLotRequestException("Boisson with code " + lotDTO.getBoissonCode() + " not found."));
+        try {
+            // Validation des entrées
+            Boisson boisson = boissonRepository.getBoissonByCode(lotDTO.getBoissonCode())
+                    .orElseThrow(() -> new InvalidLotRequestException("Boisson non trouvée avec le code : " + lotDTO.getBoissonCode()));
 
-        // Validate Fournisseur
-        Fournisseur fournisseur = fournisseurRepository.findByCode(lotDTO.getFournisseurCode())
-                .orElseThrow(() -> new InvalidLotRequestException("Fournisseur with code " + lotDTO.getFournisseurCode() + " not found."));
+            Fournisseur fournisseur = fournisseurRepository.findByCode(lotDTO.getFournisseurCode())
+                    .orElseThrow(() -> new InvalidLotRequestException("Fournisseur non trouvé avec le code : " + lotDTO.getFournisseurCode()));
 
-        
+            TypeLotStatus typeLotStatus = typeLotStatusRepository.findBySlug(lotDTO.getTypeLotStatusCode())
+                    .orElseThrow(() -> new InvalidLotRequestException("Statut de lot non trouvé avec le slug : " + lotDTO.getTypeLotStatusCode()));
 
-        // Validate TypeLotStatus
-        TypeLotStatus typeLotStatus = typeLotStatusRepository.findBySlug(lotDTO.getTypeLotStatusCode())
-                .orElseThrow(() -> new InvalidLotRequestException("TypeLotStatus with libelle " + lotDTO.getTypeLotStatusCode() + " not found."));
+            // Génération et validation du numéro de lot
+            String numeroLot = generateLotNumero();
+            if (lotRepository.findByNumeroLot(numeroLot).isPresent()) {
+                logger.warning("Le numéro de lot généré existe déjà : " + numeroLot);
+                throw new DuplicateLotNumeroException("Le numéro de lot généré " + numeroLot + " existe déjà. Veuillez réessayer.");
+            }
 
-        // Generate unique numeroLot
-        String numeroLot = generateLotNumero();
-        if (lotRepository.findByNumeroLot(numeroLot).isPresent()) {
-            throw new DuplicateLotNumeroException("Generated lot number " + numeroLot + " already exists. Please try again.");
+            // Création de l'entité Lot
+            Lot lot = LotMapper.toEntity(lotDTO);
+            lot.setNumeroLot(numeroLot);
+            lot.setBoisson(boisson);
+            lot.setFournisseur(fournisseur);
+            lot.setTypeLotStatus(typeLotStatus);
+            lot.setQuantiteActuelle(lotDTO.getQuantiteInitiale());
+            logger.info("Setting codeEmplacementActuel for new lot: " + lotDTO.getCodeEmplacementDestination());
+            lot.setCodeEmplacementActuel(lotDTO.getCodeEmplacementDestination());
+
+            // Sauvegarde du lot
+            Lot savedLot = lotRepository.save(lot);
+            logger.info("Lot sauvegardé avec succès avec l'ID : " + savedLot.getId() + " et le numéro : " + savedLot.getNumeroLot());
+
+            try {
+                mouvementService.receptionnerLot(savedLot.getId(), savedLot.getQuantiteActuelle(), lotDTO.getCodeEmplacementDestination(), lotDTO.getUtilisateurEmail(), lotDTO.getNotes());
+                logger.info("Réception du lot réussie pour le lot ID : " + savedLot.getId());
+            } catch (Exception e) {
+                logger.severe("Échec de la réception du lot. Tentative de rollback pour le lot ID : " + savedLot.getId() + ". Erreur : " + e.getMessage());
+                try {
+                    lotRepository.delete(savedLot.getId());
+                    logger.info("Rollback manuel du lot ID : " + savedLot.getId() + " réussi.");
+                } catch (Exception rollbackEx) {
+                    logger.severe("Échec du rollback manuel pour le lot ID : " + savedLot.getId() + ". Erreur de rollback : " + rollbackEx.getMessage());
+                    // Propager une exception indiquant l'échec du rollback
+                    throw new LotCreationException("Échec de la création du lot et du rollback manuel pour le lot : " + numeroLot, rollbackEx);
+                }
+                // Propager une exception métier claire après le rollback
+                throw new MouvementReceptionException("La réception du lot a échoué. Le lot a été annulé. Cause : " + e.getMessage(), e);
+            }
+
+            logger.info("Lot créé et réceptionné avec succès. Numéro de lot : " + savedLot.getNumeroLot());
+            return LotMapper.toDTO(savedLot);
+
+        } catch (InvalidLotRequestException | DuplicateLotNumeroException e) {
+            logger.warning("Validation échouée lors de la création du lot : " + e.getMessage());
+            throw e; // Renvoyer les exceptions de validation spécifiques
+        } catch (Exception e) {
+            logger.severe("Une erreur inattendue est survenue lors de la création du lot : " + e.getMessage());
+            // Envelopper les autres exceptions dans une exception de création de lot générique
+            throw new LotCreationException("Une erreur inattendue est survenue lors de la création du lot.", e);
         }
-
-        Lot lot = LotMapper.toEntity(lotDTO);
-        lot.setNumeroLot(numeroLot);
-        lot.setBoisson(boisson);
-        lot.setFournisseur(fournisseur);
-        
-        lot.setTypeLotStatus(typeLotStatus);
-        lot.setQuantiteActuelle(lotDTO.getQuantiteInitiale()); // Initial quantity is current quantity
-
-        Lot savedLot = lotRepository.save(lot);
-        mouvementService.receptionnerLot(savedLot.getId(),savedLot.getQuantiteActuelle(),lotDTO.getCodeEmplacementDestination(),lotDTO.getUtilisateurEmail(),lotDTO.getNotes());
-        logger.info("Lot created successfully with numeroLot: " + savedLot.getNumeroLot());
-        return LotMapper.toDTO(savedLot);
     }
 
     @Override
@@ -103,6 +133,22 @@ public class LotServiceImpl implements org.beni.gestionboisson.lot.service.LotSe
                 .orElseThrow(() -> new LotNotFoundException("Lot with ID " + id + " not found."));
         logger.info("Lot retrieved successfully with ID: " + id);
         return LotMapper.toDTO(lot);
+    }
+
+    @Override
+    public LotResponseDTO getLotByNumeroLot(String numeroLot) {
+        LotResponseDTO lotDTO = null;
+        logger.info("Attempting to retrieve lot with numero Lot : " + numeroLot);
+        Optional<Lot> lot = lotRepository.findByNumeroLot(numeroLot);
+        if(lot.isPresent()) {
+            logger.info("Lot retrieved successfully with numero Lot : " + numeroLot);
+         lotDTO = LotMapper.toDTO(lot.get());
+        }
+        else {
+            logger.warning(" no found Lot  with numero Lot : " + numeroLot);
+        }
+        return lotDTO;
+
     }
 
     @Override
