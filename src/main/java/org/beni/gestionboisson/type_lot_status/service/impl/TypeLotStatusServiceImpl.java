@@ -3,6 +3,7 @@ package org.beni.gestionboisson.type_lot_status.service.impl;
 import com.github.slugify.Slugify;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 import org.beni.gestionboisson.type_lot_status.dao.TypeLotStatusRepositoryImpl;
 import org.beni.gestionboisson.type_lot_status.dto.TypeLotStatusDTO;
