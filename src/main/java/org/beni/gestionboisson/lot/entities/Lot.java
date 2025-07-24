@@ -11,6 +11,7 @@ import org.beni.gestionboisson.fournisseur.entities.Fournisseur;
 import org.beni.gestionboisson.type_lot_status.entities.TypeLotStatus;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -32,11 +33,11 @@ public class Lot {
     private Boisson boisson;
 
     @Column(nullable = false)
-    private Instant dateAcquisition;
+    private LocalDate dateAcquisition;
 
 
     @Column(nullable = false)
-    private Instant dateLimiteConsommation;
+    private LocalDate dateLimiteConsommation;
 
     @Column(nullable = false)
     private Double quantiteInitiale;
