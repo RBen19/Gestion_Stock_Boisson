@@ -2,6 +2,7 @@ package org.beni.gestionboisson.lot.service.impl;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 import org.beni.gestionboisson.boisson.entities.Boisson;
 import org.beni.gestionboisson.boisson.repository.BoissonRepository;
@@ -18,6 +19,7 @@ import org.beni.gestionboisson.lot.exceptions.InvalidLotRequestException;
 import org.beni.gestionboisson.lot.exceptions.LotNotFoundException;
 import org.beni.gestionboisson.lot.mappers.LotMapper;
 import org.beni.gestionboisson.lot.repository.LotRepository;
+import org.beni.gestionboisson.mouvement.service.MouvementService;
 import org.beni.gestionboisson.type_lot_status.entities.TypeLotStatus;
 import org.beni.gestionboisson.type_lot_status.repository.TypeLotStatusRepository;
 import org.beni.gestionboisson.uniteDeMesure.entities.UniteDeMesure;
@@ -52,6 +54,8 @@ public class LotServiceImpl implements org.beni.gestionboisson.lot.service.LotSe
 
     @Inject
     private UniteDeMesureRepository uniteDeMesureRepository;
+    @Inject
+    private MouvementService mouvementService;
 
     @Override
     @Transactional
@@ -69,7 +73,7 @@ public class LotServiceImpl implements org.beni.gestionboisson.lot.service.LotSe
         
 
         // Validate TypeLotStatus
-        TypeLotStatus typeLotStatus = typeLotStatusRepository.findByLibelle(lotDTO.getTypeLotStatusCode())
+        TypeLotStatus typeLotStatus = typeLotStatusRepository.findBySlug(lotDTO.getTypeLotStatusCode())
                 .orElseThrow(() -> new InvalidLotRequestException("TypeLotStatus with libelle " + lotDTO.getTypeLotStatusCode() + " not found."));
 
         // Generate unique numeroLot
@@ -87,6 +91,7 @@ public class LotServiceImpl implements org.beni.gestionboisson.lot.service.LotSe
         lot.setQuantiteActuelle(lotDTO.getQuantiteInitiale()); // Initial quantity is current quantity
 
         Lot savedLot = lotRepository.save(lot);
+        mouvementService.receptionnerLot(savedLot.getId(),savedLot.getQuantiteActuelle(),lotDTO.getCodeEmplacementDestination(),lotDTO.getUtilisateurEmail(),lotDTO.getNotes());
         logger.info("Lot created successfully with numeroLot: " + savedLot.getNumeroLot());
         return LotMapper.toDTO(savedLot);
     }
