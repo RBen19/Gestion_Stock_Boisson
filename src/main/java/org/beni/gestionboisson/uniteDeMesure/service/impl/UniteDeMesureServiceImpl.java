@@ -1,8 +1,10 @@
 package org.beni.gestionboisson.uniteDeMesure.service.impl;
 
 import com.github.slugify.Slugify;
+//import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 import org.beni.gestionboisson.uniteDeMesure.dao.UniteDeMesureRepositoryImpl;
 import org.beni.gestionboisson.uniteDeMesure.dto.UniteDeMesureDTO;
