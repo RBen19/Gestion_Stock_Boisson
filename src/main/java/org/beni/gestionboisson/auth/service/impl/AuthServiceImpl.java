@@ -3,6 +3,7 @@ package org.beni.gestionboisson.auth.service.impl;
 import io.jsonwebtoken.Claims;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import org.beni.gestionboisson.auth.dto.AuthRequestDTO;
 import org.beni.gestionboisson.auth.dto.AuthResponseDTO;
 import org.beni.gestionboisson.auth.dto.ChangePasswordRequestDTO;
