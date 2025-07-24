@@ -1,7 +1,9 @@
 package org.beni.gestionboisson.auth.service.impl;
 
+//import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 import org.beni.gestionboisson.auth.dto.RoleDTO;
 import org.beni.gestionboisson.auth.entities.Role;
@@ -14,8 +16,8 @@ import org.beni.gestionboisson.auth.exceptions.RoleNotFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 @ApplicationScoped
+//@ApplicationScoped
 public class RoleServiceImpl implements RoleService {
 
     private static final Logger logger = LoggerFactory.getLogger(RoleServiceImpl.class);
