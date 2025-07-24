@@ -10,6 +10,9 @@ import org.beni.gestionboisson.lot.dto.LotDTO;
 import org.beni.gestionboisson.lot.dto.LotResponseDTO;
 import org.beni.gestionboisson.lot.dto.LotSearchStrategyDTO;
 import org.beni.gestionboisson.lot.dto.LotStatusUpdateDTO;
+import org.beni.gestionboisson.lot.exceptions.DuplicateLotNumeroException;
+import org.beni.gestionboisson.lot.exceptions.InvalidLotRequestException;
+import org.beni.gestionboisson.lot.exceptions.LotCreationException;
 import org.beni.gestionboisson.lot.service.LotService;
 import org.beni.gestionboisson.shared.response.ApiResponse;
 
@@ -26,23 +29,40 @@ public class LotController {
 
     @Inject
     private LotService lotService;
-
+    //TODO: penser à rajouter une colonne volumeParUnite sur le modèle de Lot qui sera un String résultant
+    // de la concaténation du volume donner par l'utilisateur en Double et de l'unite de mesure
+    // Ajouter cette colonne à ligneMouvement aussi
     @POST
     @Secured
     public Response createLot(LotDTO lotDTO) {
         String username = TokenContext.getUsername();
         String role = TokenContext.getRole();
         String email = TokenContext.getEmail();
-        if(username == null || role == null || email == null){
-            logger.warning("User with username : "+username+" with role has : "+ role + " and email "+  email +"  requested to create a new lot.");
-            return Response.status(Response.Status.NOT_FOUND).entity(ApiResponse.error("User not found", Response.Status.NOT_FOUND.getStatusCode())).build();
+        if (username == null || role == null || email == null) {
+            logger.warning("User details not found in token context.");
+            return Response.status(Response.Status.UNAUTHORIZED).entity(ApiResponse.error("User authentication details are missing.", Response.Status.UNAUTHORIZED.getStatusCode())).build();
         }
 
-
-        logger.info("User with username : "+username+" with role has : "+ role + " and email "+  email +"  requested to create a new lot.");
+        logger.info("User '" + username + "' (Role: " + role + ", Email: " + email + ") is attempting to create a new lot.");
         lotDTO.setUtilisateurEmail(email);
-        LotResponseDTO createdLot = lotService.createLot(lotDTO);
-        return Response.status(Response.Status.CREATED).entity(ApiResponse.success(createdLot)).build();
+
+        try {
+            LotResponseDTO createdLot = lotService.createLot(lotDTO);
+            logger.info("Successfully created lot with number: " + createdLot.getNumeroLot());
+            return Response.status(Response.Status.CREATED).entity(ApiResponse.success(createdLot)).build();
+        } catch (InvalidLotRequestException e) {
+            logger.log(java.util.logging.Level.WARNING, "Invalid lot request from user '" + username + "': " + e.getMessage(), e);
+            return Response.status(Response.Status.BAD_REQUEST).entity(ApiResponse.error(e.getMessage(), Response.Status.BAD_REQUEST.getStatusCode())).build();
+        } catch (DuplicateLotNumeroException e) {
+            logger.log(java.util.logging.Level.WARNING, "Duplicate lot number detected for user '" + username + "': " + e.getMessage(), e);
+            return Response.status(Response.Status.CONFLICT).entity(ApiResponse.error(e.getMessage(), Response.Status.CONFLICT.getStatusCode())).build();
+        } catch (LotCreationException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Lot persistence error for user '" + username + "': " + e.getMessage(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error("A server error occurred while creating the lot.", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())).build();
+        } catch (Exception e) {
+            logger.log(java.util.logging.Level.SEVERE, "An unexpected error occurred while creating a lot for user '" + username + "': " + e.getMessage(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error("An unexpected error occurred.", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())).build();
+        }
     }
 
     @GET
