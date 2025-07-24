@@ -3,6 +3,7 @@ package org.beni.gestionboisson.emplacement.service.impl;
 import com.github.slugify.Slugify;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 import org.beni.gestionboisson.emplacement.dto.EmplacementDTO;
 import org.beni.gestionboisson.emplacement.entities.Emplacement;
