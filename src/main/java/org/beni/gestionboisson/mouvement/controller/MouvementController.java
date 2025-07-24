@@ -5,6 +5,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.beni.gestionboisson.auth.security.Secured;
+import org.beni.gestionboisson.auth.security.TokenContext;
+import org.beni.gestionboisson.lot.dto.TransfertLotDTO;
 import org.beni.gestionboisson.mouvement.dto.MouvementCreateDTO;
 import org.beni.gestionboisson.mouvement.dto.MouvementDTO;
 import org.beni.gestionboisson.mouvement.service.MouvementService;
@@ -24,6 +26,35 @@ public class MouvementController {
 
     @Inject
     MouvementService mouvementService;
+    @POST()
+    @Secured
+    @Path("/transfert")
+    public Response createMouvement(TransfertLotDTO transfertLotDTO) {
+        String username = TokenContext.getUsername();
+        String role = TokenContext.getRole();
+        String email = TokenContext.getEmail();
+        if (username == null || role == null || email == null) {
+            logger.warn("User details not found in token context.");
+            return Response.status(Response.Status.UNAUTHORIZED).entity(ApiResponse.error("User authentication details are missing.", Response.Status.UNAUTHORIZED.getStatusCode())).build();
+        }
+        try{
+            MouvementDTO createdMouvement= mouvementService.transfertLot(
+                    transfertLotDTO.getNumeroLot(),
+                    transfertLotDTO.getQuantite(),
+                    null,
+                    transfertLotDTO.getCodeEmplacementDestination(),
+                    email,
+                    transfertLotDTO.getNotes()
+            );
+            return Response.status(Response.Status.CREATED).entity(createdMouvement).build();
+        } catch (org.beni.gestionboisson.lot.exceptions.LotCreationException e) {
+            logger.error("Error creating lot during transfert: {}", e.getMessage(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error(e.getMessage(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())).build();
+        } catch (Exception e) {
+            logger.error("Unexpected error during lot transfert: {}", e.getMessage(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error("Internal server error during lot transfert", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())).build();
+        }
+    }
 
     @POST
     @Secured
