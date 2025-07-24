@@ -1,7 +1,9 @@
 package org.beni.gestionboisson.auth.dao;
 
+//import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceContext;
@@ -10,6 +12,7 @@ import org.beni.gestionboisson.auth.entities.Utilisateur;
 import org.beni.gestionboisson.auth.repository.UtilisateurRepository;
 
 import java.util.Optional;
+
 
 @ApplicationScoped
 public class UtilisateurRepositoryImpl implements UtilisateurRepository {
