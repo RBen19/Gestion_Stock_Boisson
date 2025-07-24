@@ -2,6 +2,7 @@ package org.beni.gestionboisson.emplacement.dao;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import org.beni.gestionboisson.emplacement.entities.Emplacement;
