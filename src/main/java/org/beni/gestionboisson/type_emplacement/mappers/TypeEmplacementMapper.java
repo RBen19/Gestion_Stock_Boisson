@@ -3,7 +3,8 @@ package org.beni.gestionboisson.type_emplacement.mappers;
 import org.beni.gestionboisson.type_emplacement.dto.TypeEmplacementDTO;
 import org.beni.gestionboisson.type_emplacement.entities.TypeEmplacement;
 
-public class TypeEmplacementMapper {
+public class
+TypeEmplacementMapper {
 
     public static TypeEmplacement toEntity(TypeEmplacementDTO dto) {
         return TypeEmplacement.builder()
