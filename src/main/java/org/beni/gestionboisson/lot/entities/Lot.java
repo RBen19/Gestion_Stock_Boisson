@@ -58,6 +58,8 @@ public class Lot {
 
     @Column(nullable = false)
     private Instant updatedAt;
+    @Column(nullable = false)
+    private String codeEmplacementActuel;
 
     @PrePersist
     protected void onCreate() {
