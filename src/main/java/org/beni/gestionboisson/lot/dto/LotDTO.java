@@ -24,4 +24,5 @@ public class LotDTO {
     private String utilisateurEmail;
     private String notes;
     private String codeEmplacementDestination;
+    private String codeEmplacementActuel;
 }
