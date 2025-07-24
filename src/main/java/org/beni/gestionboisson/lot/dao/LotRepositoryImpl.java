@@ -64,7 +64,8 @@ public class LotRepositoryImpl implements LotRepository {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
-            logger.error("Error saving Lot for boisson: {}", lot.getBoisson().getNom(), e);
+            logger.error("error: {}", e.getMessage());
+            logger.error("Error saving Lot for boisson:{}", lot.getBoisson().getNom()+ e);
             throw new RuntimeException("Failed to save Lot", e);
         }
     }
