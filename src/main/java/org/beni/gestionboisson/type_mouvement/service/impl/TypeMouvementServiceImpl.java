@@ -3,6 +3,7 @@ package org.beni.gestionboisson.type_mouvement.service.impl;
 import com.github.slugify.Slugify;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 import org.beni.gestionboisson.shared.custom.DuplicateEntityException;
 import org.beni.gestionboisson.shared.custom.EntityNotFoundException;
