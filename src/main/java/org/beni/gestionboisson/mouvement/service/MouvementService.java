@@ -11,5 +11,6 @@ public interface MouvementService {
     MouvementDTO getMouvementById(Long id);
     List<MouvementDTO> getAllMouvements();
     MouvementDTO receptionnerLot(Long lotId, Double quantite, String codeEmplacementDestination, String utilisateurEmail, String notes);
+    MouvementDTO transfertLot(String numeroLot, Double quantite,String codeEmplamcementSouce, String codeEmplacementDestination,String UtilisateurEmail, String notes);// TODO: utiliser ça aussi pour sortie echantillon
     Integer getAllMouvementCount();
 }
