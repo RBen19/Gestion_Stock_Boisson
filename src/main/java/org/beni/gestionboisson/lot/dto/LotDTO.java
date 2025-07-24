@@ -1,0 +1,23 @@
+package org.beni.gestionboisson.lot.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.Instant;
+import java.util.Date;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class LotDTO {
+    private String boissonCode;
+    private Instant dateAcquisition;
+    private Instant dateLimiteConsommation;
+    private Double quantiteInitiale;
+    private Double quantiteActuelle;
+    private String fournisseurCode;
+    private String typeLotStatusCode;
+}
