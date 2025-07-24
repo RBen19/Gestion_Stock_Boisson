@@ -2,6 +2,7 @@ package org.beni.gestionboisson.type_emplacement.service.impl;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import org.beni.gestionboisson.type_emplacement.dto.TypeEmplacementDTO;
 import org.beni.gestionboisson.type_emplacement.entities.TypeEmplacement;
 import org.beni.gestionboisson.type_emplacement.mappers.TypeEmplacementMapper;
@@ -11,7 +12,6 @@ import org.beni.gestionboisson.type_emplacement.service.TypeEmplacementService;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 @ApplicationScoped
 public class TypeEmplacementServiceImpl implements TypeEmplacementService {
 
