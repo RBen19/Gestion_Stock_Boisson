@@ -2,6 +2,7 @@ package org.beni.gestionboisson.auth.dao;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceContext;
@@ -12,7 +13,6 @@ import org.beni.gestionboisson.auth.repository.RoleRepository;
 
 import java.util.List;
 import java.util.Optional;
-
 @ApplicationScoped
 public class RoleRepositoryImpl implements RoleRepository {
 
