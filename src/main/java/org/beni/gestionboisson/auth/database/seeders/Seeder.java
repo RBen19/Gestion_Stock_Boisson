@@ -3,6 +3,7 @@ package org.beni.gestionboisson.auth.database.seeders;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import org.beni.gestionboisson.auth.dto.UtilisateurDTO;
 import org.beni.gestionboisson.auth.entities.Role;
 import org.beni.gestionboisson.auth.repository.RoleRepository;
