@@ -2,8 +2,10 @@ package org.beni.gestionboisson.type_emplacement.database.seeders;
 
 import jakarta.annotation.PostConstruct;
 
+//import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import org.beni.gestionboisson.type_emplacement.dto.TypeEmplacementDTO;
 import org.beni.gestionboisson.type_emplacement.service.TypeEmplacementService;
 import org.slf4j.Logger;
