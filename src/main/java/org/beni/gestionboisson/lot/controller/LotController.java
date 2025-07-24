@@ -5,6 +5,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.beni.gestionboisson.auth.security.Secured;
+import org.beni.gestionboisson.auth.security.TokenContext;
 import org.beni.gestionboisson.lot.dto.LotDTO;
 import org.beni.gestionboisson.lot.dto.LotResponseDTO;
 import org.beni.gestionboisson.lot.dto.LotSearchStrategyDTO;
@@ -29,7 +30,17 @@ public class LotController {
     @POST
     @Secured
     public Response createLot(LotDTO lotDTO) {
-        logger.info("Received request to create a new lot.");
+        String username = TokenContext.getUsername();
+        String role = TokenContext.getRole();
+        String email = TokenContext.getEmail();
+        if(username == null || role == null || email == null){
+            logger.warning("User with username : "+username+" with role has : "+ role + " and email "+  email +"  requested to create a new lot.");
+            return Response.status(Response.Status.NOT_FOUND).entity(ApiResponse.error("User not found", Response.Status.NOT_FOUND.getStatusCode())).build();
+        }
+
+
+        logger.info("User with username : "+username+" with role has : "+ role + " and email "+  email +"  requested to create a new lot.");
+        lotDTO.setUtilisateurEmail(email);
         LotResponseDTO createdLot = lotService.createLot(lotDTO);
         return Response.status(Response.Status.CREATED).entity(ApiResponse.success(createdLot)).build();
     }
