@@ -1,7 +1,9 @@
 package org.beni.gestionboisson.boisson.service.impl;
 
+//import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 import org.beni.gestionboisson.boisson.dto.BoissonDTO;
 import org.beni.gestionboisson.boisson.entities.Boisson;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
+//@ApplicationScoped
 public class BoissonServiceImpl implements BoissonService {
 
     private static final Logger logger = LoggerFactory.getLogger(BoissonServiceImpl.class);
