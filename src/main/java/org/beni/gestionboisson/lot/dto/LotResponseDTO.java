@@ -10,6 +10,7 @@ import org.beni.gestionboisson.fournisseur.dto.FournisseurDTO;
 import org.beni.gestionboisson.type_lot_status.dto.TypeLotStatusDTO;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -20,8 +21,8 @@ public class LotResponseDTO {
     private Long id;
     private String numeroLot;
     private BoissonDTO boisson;
-    private Instant dateAcquisition;
-    private Instant dateLimiteConsommation;
+    private LocalDate dateAcquisition;
+    private LocalDate dateLimiteConsommation;
     private Double quantiteInitiale;
     private Double quantiteActuelle;
     private FournisseurDTO fournisseur;
