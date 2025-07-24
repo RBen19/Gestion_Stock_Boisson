@@ -1,8 +1,10 @@
 package org.beni.gestionboisson.fournisseur.database.seeders;
 
 import jakarta.annotation.PostConstruct;
+//import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import org.beni.gestionboisson.fournisseur.dto.CreateFournisseurDTO;
 import org.beni.gestionboisson.fournisseur.service.FournisseurService;
 
