@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface LotService {
     LotResponseDTO createLot(LotDTO lotDTO);
     LotResponseDTO getLotById(Long id);
+    LotResponseDTO getLotByNumeroLot(String numeroLot);
     List<LotResponseDTO> getAllLots();
     LotResponseDTO updateLot(Long id, LotDTO lotDTO);
     void deleteLot(Long id);
