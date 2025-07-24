@@ -19,7 +19,7 @@ public class Mouvement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "type_mouvement_id")
     private TypeMouvement typeMouvement;
 
