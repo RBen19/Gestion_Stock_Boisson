@@ -1,7 +1,9 @@
 package org.beni.gestionboisson.uniteDeMesure.dao;
 
+//import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.NoResultException;
@@ -13,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Optional;
 
+//@ApplicationScoped
 @ApplicationScoped
 public class UniteDeMesureRepositoryImpl implements UniteDeMesureRepository {
 
