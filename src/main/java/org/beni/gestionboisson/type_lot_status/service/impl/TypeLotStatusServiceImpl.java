@@ -136,7 +136,7 @@ public class TypeLotStatusServiceImpl implements TypeLotStatusService {
     @Transactional
     public void seedTypeLotStatuses() {
         logger.info("Seeding default TypeLotStatus values.");
-        String[] statuses = {"Actif", "En quarantaine", "Refusé", "Expiré", "Terminé"};
+        String[] statuses = {"Actif", "En quarantaine", "Refusé", "Expiré", "Terminé","Retourné","Retour en cours"};
         for (String libelle : statuses) {
             if (typeLotStatusRepository.findByLibelle(libelle).isEmpty()) {
                 TypeLotStatus typeLotStatus = new TypeLotStatus();

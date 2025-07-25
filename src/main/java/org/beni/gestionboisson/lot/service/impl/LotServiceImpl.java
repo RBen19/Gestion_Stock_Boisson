@@ -269,9 +269,13 @@ public class LotServiceImpl implements org.beni.gestionboisson.lot.service.LotSe
     private List<LotResponseDTO> getSortedLots(String boissonCode, Optional<String> uniteDeMesureCode, Comparator<Lot> comparator) {
         Boisson boisson = boissonRepository.getBoissonByCode(boissonCode)
                 .orElseThrow(() -> new InvalidLotRequestException("Boisson with code " + boissonCode + " not found."));
-        UniteDeMesure unitDeMesureOnDataBase =  uniteDeMesureRepository.findByCode(String.valueOf(uniteDeMesureCode))
-                .orElseThrow(() -> new InvalidLotRequestException("No available unitDeMesureOnDataBase found for UnitMesure with  code: " + String.valueOf(uniteDeMesureCode)));
-                ;
+
+       // UniteDeMesure unitDeMesureOnDataBase =  uniteDeMesureRepository.findByCode(String.valueOf(uniteDeMesureCode))
+             //   .orElseThrow(() -> new InvalidLotRequestException("No available unitDeMesureOnDataBase found for UnitMesure with  code: " + String.valueOf(uniteDeMesureCode)));
+             //   ;
+         Optional<UniteDeMesure> unitDeMesureOnDataBase =  uniteDeMesureRepository.findByCode(String.valueOf(uniteDeMesureCode))
+        //  .orElseThrow(() -> new InvalidLotRequestException("No available unitDeMesureOnDataBase found for UnitMesure with  code: " + String.valueOf(uniteDeMesureCode)));
+           ;
 
 
         List<Lot> availableLots = lotRepository.findAvailableLotsByBoissonCode(boissonCode).stream()
@@ -287,9 +291,12 @@ public class LotServiceImpl implements org.beni.gestionboisson.lot.service.LotSe
             // For now, I'll assume boisson.getUniteDeMesure() returns the string code
        //  Optional<UniteDeMesure>  unitDeMesureOnDataBase =  uniteDeMesureRepository.findByCode(String.valueOf(uniteDeMesureCode));
 
-             availableLots = availableLots.stream()
-                     .filter(lot -> unitDeMesureOnDataBase.getCode().equalsIgnoreCase(unitCode))
-                     .collect(Collectors.toList());
+          //   availableLots = availableLots.stream()
+               //      .filter(lot -> unitDeMesureOnDataBase.getCode().equalsIgnoreCase(unitCode))
+                 //    .collect(Collectors.toList());
+               availableLots = availableLots.stream()
+                  .filter(lot -> unitDeMesureOnDataBase.get().getCode().equalsIgnoreCase(unitCode))
+               .collect(Collectors.toList());
              if (availableLots.isEmpty()) {
                  logger.warning("No available lots found for boisson code: " + boissonCode + " and unit code: " + unitCode);
              }
