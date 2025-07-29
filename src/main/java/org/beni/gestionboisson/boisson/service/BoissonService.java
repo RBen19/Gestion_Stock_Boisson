@@ -10,4 +10,5 @@ public interface BoissonService {
     BoissonDTO getBoissonById(Long id);
     void seedBoissons();
     BoissonDTO getBoissonByCode(String codeBoisson);
+    BoissonDTO updateBoisson(Long id, BoissonDTO dto);
 }
