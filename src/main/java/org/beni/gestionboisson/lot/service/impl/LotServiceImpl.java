@@ -63,7 +63,8 @@ public class LotServiceImpl implements org.beni.gestionboisson.lot.service.LotSe
     @Transactional
     public LotResponseDTO createLot(LotDTO lotDTO) {
         logger.info("Début de la création d'un nouveau lot pour la boisson code : " + lotDTO.getBoissonCode());
-
+        lotDTO.setCodeEmplacementDestination("ZR");
+        lotDTO.setCodeEmplacementActuel("ZR");
         try {
             // Validation des entrées
             Boisson boisson = boissonRepository.getBoissonByCode(lotDTO.getBoissonCode())
@@ -89,8 +90,10 @@ public class LotServiceImpl implements org.beni.gestionboisson.lot.service.LotSe
             lot.setFournisseur(fournisseur);
             lot.setTypeLotStatus(typeLotStatus);
             lot.setQuantiteActuelle(lotDTO.getQuantiteInitiale());
+            lot.setQuantiteInitiale(lotDTO.getQuantiteInitiale());
+            lot.setCodeEmplacementActuel(lotDTO.getCodeEmplacementActuel());
             logger.info("Setting codeEmplacementActuel for new lot: " + lotDTO.getCodeEmplacementDestination());
-            lot.setCodeEmplacementActuel(lotDTO.getCodeEmplacementDestination());
+           // lot.setCodeEmplacementActuel("ZR");
 
             // Sauvegarde du lot
             Lot savedLot = lotRepository.save(lot);
