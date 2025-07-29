@@ -11,4 +11,5 @@ public interface CategorieRepository {
     Categorie save(Categorie categorie);
     void deleteById(Long id);
     Optional<Categorie> findByCode(String code);
+    Optional<Categorie> findByNom(String nom);
 }
