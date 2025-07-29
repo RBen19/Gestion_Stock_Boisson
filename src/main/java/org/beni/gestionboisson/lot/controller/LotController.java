@@ -79,7 +79,7 @@ public class LotController {
     public Response getAllLots() {
         logger.info("Received request to get all lots.");
         List<LotResponseDTO> lots = lotService.getAllLots();
-        return Response.ok(lots).build();
+        return Response.ok(ApiResponse.success(lots)).build();
     }
 
     @PUT
@@ -125,7 +125,7 @@ public class LotController {
     public Response findAvailableLotsFifo(@QueryParam("boissonCode") String boissonCode, @QueryParam("uniteDeMesureCode") Optional<String> uniteDeMesureCode) {
         logger.info("Received request for FIFO lots for boisson: " + boissonCode + " and unit: " + uniteDeMesureCode.orElse("N/A"));
         List<LotResponseDTO> lots = lotService.findAvailableLotsFifo(boissonCode, uniteDeMesureCode);
-        return Response.ok(lots).build();
+        return Response.ok(ApiResponse.success(lots)).build();
     }
 
     @GET
@@ -134,7 +134,7 @@ public class LotController {
     public Response findAvailableLotsLifo(@QueryParam("boissonCode") String boissonCode, @QueryParam("uniteDeMesureCode") Optional<String> uniteDeMesureCode) {
         logger.info("Received request for LIFO lots for boisson: " + boissonCode + " and unit: " + uniteDeMesureCode.orElse("N/A"));
         List<LotResponseDTO> lots = lotService.findAvailableLotsLifo(boissonCode, uniteDeMesureCode);
-        return Response.ok(lots).build();
+        return Response.ok(ApiResponse.success(lots)).build();
     }
 
     @GET
@@ -143,6 +143,6 @@ public class LotController {
     public Response findAvailableLotsFefo(@QueryParam("boissonCode") String boissonCode, @QueryParam("uniteDeMesureCode") Optional<String> uniteDeMesureCode) {
         logger.info("Received request for FEFO lots for boisson: " + boissonCode + " and unit: " + uniteDeMesureCode.orElse("N/A"));
         List<LotResponseDTO> lots = lotService.findAvailableLotsFefo(boissonCode, uniteDeMesureCode);
-        return Response.ok(lots).build();
+        return Response.ok(ApiResponse.success(lots)).build();
     }
 }
