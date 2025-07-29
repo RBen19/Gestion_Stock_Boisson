@@ -28,15 +28,16 @@ RUN rm -rf /usr/local/tomcat/webapps/*
 # Copier le fichier WAR depuis le stage de build
 COPY --from=build /app/target/gestionBoisson-1.0-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
 
+# Copier le script de démarrage
+COPY start-tomcat.sh /usr/local/bin/start-tomcat.sh
+RUN chmod +x /usr/local/bin/start-tomcat.sh
+
 # Variables d'environnement par défaut (overridées par Render)
 ENV DATABASE_URL=""
 ENV PORT=8080
 
-# Configurer Tomcat pour utiliser le port de Render
-RUN sed -i 's/port="8080"/port="${PORT}"/g' /usr/local/tomcat/conf/server.xml
-
 # Exposer le port
 EXPOSE $PORT
 
-# Démarrer Tomcat
-CMD ["catalina.sh", "run"]
+# Démarrer Tomcat avec notre script
+CMD ["/usr/local/bin/start-tomcat.sh"]
