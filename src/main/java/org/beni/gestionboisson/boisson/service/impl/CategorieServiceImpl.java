@@ -50,6 +50,11 @@ public class CategorieServiceImpl implements CategorieService {
     @Transactional
     public CategorieDTO createCategorie(CategorieDTO categorieDTO) {
         logger.info("Attempting to create category with name: {}", categorieDTO.getNom());
+        Optional<Categorie> verifCategorie = categorieRepository.findByNom(categorieDTO.getNom());
+        if (verifCategorie.isPresent()) {
+            logger.error("Category with name {} already exists.", categorieDTO.getNom());
+            throw new InvalidBoissonDataException("Category with name " + categorieDTO.getNom() + " already exists.");
+        }
         String baseCode = generateSlug(categorieDTO.getNom());
         String uniqueCode = generateUniqueCode(baseCode);
 
