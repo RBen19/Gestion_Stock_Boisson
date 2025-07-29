@@ -18,6 +18,7 @@ import org.beni.gestionboisson.boisson.exceptions.BoissonNotFoundException;
 import org.beni.gestionboisson.boisson.exceptions.InvalidBoissonDataException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -132,5 +133,18 @@ public class BoissonServiceImpl implements BoissonService {
                     logger.warn("Boisson with code {} not found.", codeBoisson);
                     return new BoissonNotFoundException("Boisson not found with code: " + codeBoisson);
                 });
+    }
+
+    @Override
+    public BoissonDTO updateBoisson(Long id, BoissonDTO dto) {
+         logger.info("Updating boisson with ID: {}", id);
+         Optional<Boisson> existingBoisson = boissonRepository.findById(id);
+         if(existingBoisson.isEmpty()) {
+             throw new BoissonNotFoundException("Boisson not found with ID: " + id);
+         }
+        Boisson boisson = BoissonMapper.toEntity(dto);
+         boissonRepository.save(boisson);
+         logger.info("Boisson updated successfully with ID: {}", id);
+         return BoissonMapper.toDTO(boisson);
     }
 }
