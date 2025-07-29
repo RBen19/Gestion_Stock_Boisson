@@ -14,7 +14,7 @@ import java.time.Instant;
 public class CategorieDTO {
     private Long idCategorie;
     private String nom;
-    
+    private String codeCategorie;
     private Long parentCategorieId;
    // private Instant createdAt;
    //
