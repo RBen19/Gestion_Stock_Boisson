@@ -46,7 +46,7 @@ public class MouvementController {
                     email,
                     transfertLotDTO.getNotes()
             );
-            return Response.status(Response.Status.CREATED).entity(createdMouvement).build();
+            return Response.status(Response.Status.CREATED).entity(ApiResponse.success(createdMouvement)).build();
         } catch (org.beni.gestionboisson.lot.exceptions.LotCreationException e) {
             logger.error("Error creating lot during transfert: {}", e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error(e.getMessage(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())).build();
