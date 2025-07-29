@@ -41,6 +41,19 @@ public class BoissonController {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error("An unexpected error occurred", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())).build();
         }
     }
+    @PUT
+    @Path("/{id}")
+    public Response updateBoisson(@PathParam("id") Long id, BoissonDTO boissonDTO) {
+        logger.info("Received request to update boisson with ID {}: {}", id, boissonDTO.getNom());
+        try {
+            BoissonDTO updatedBoisson = boissonService.updateBoisson(id, boissonDTO);
+            logger.info("Boisson with ID {} updated successfully.", id);
+            return Response.ok(ApiResponse.success(updatedBoisson)).build();
+        } catch (BoissonNotFoundException e) {
+            logger.warn("Boisson with ID {} not found for update: {}", id, e.getMessage());
+            return Response.status(Response.Status.NOT_FOUND).entity(ApiResponse.error(e.getMessage(), Response.Status.NOT_FOUND.getStatusCode())).build();
+        }
+    }
 
 
     @GET
