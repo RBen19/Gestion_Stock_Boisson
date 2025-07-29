@@ -115,7 +115,7 @@ public class LotController {
     public Response changeLotStatus(@PathParam("id") Long lotId, LotStatusUpdateDTO statusUpdateDTO) {
         logger.info("Received request to change status for lot ID: " + lotId + " to: " + statusUpdateDTO.getNewStatusLibelle());
         LotResponseDTO updatedLot = lotService.changeLotStatus(lotId, statusUpdateDTO);
-        return Response.ok(updatedLot).build();
+        return Response.ok(ApiResponse.success(updatedLot)).build();
     }
 
     @GET
