@@ -69,4 +69,15 @@ public class CategorieRepositoryImpl implements CategorieRepository {
             return Optional.empty();
         }
     }
+
+    @Override
+    public Optional<Categorie> findByNom(String nom) {
+        try {
+            return Optional.of(em.createQuery("SELECT c FROM Categorie c WHERE c.nom = :nom", Categorie.class)
+                    .setParameter("nom", nom)
+                    .getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
+    }
 }
