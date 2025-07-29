@@ -11,6 +11,7 @@ public class CategorieMapper {
         }
         return CategorieDTO.builder()
                 .idCategorie(categorie.getIdCategorie())
+                .codeCategorie(categorie.getCodeCategorie())
                 .nom(categorie.getNom())
                 
                 .parentCategorieId(categorie.getParentCategorie() != null ? categorie.getParentCategorie().getIdCategorie() : null)
@@ -24,6 +25,7 @@ public class CategorieMapper {
             return null;
         }
         Categorie categorie = Categorie.builder()
+                .codeCategorie(dto.getCodeCategorie())
                 .idCategorie(dto.getIdCategorie())
                 .nom(dto.getNom())
                 
