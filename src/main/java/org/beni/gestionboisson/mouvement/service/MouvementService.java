@@ -2,6 +2,8 @@ package org.beni.gestionboisson.mouvement.service;
 
 import org.beni.gestionboisson.mouvement.dto.MouvementCreateDTO;
 import org.beni.gestionboisson.mouvement.dto.MouvementDTO;
+import org.beni.gestionboisson.lot.dto.TransfertMultipleLotDTO;
+import org.beni.gestionboisson.lot.dto.TransfertMultipleLotResponseDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,5 +14,6 @@ public interface MouvementService {
     List<MouvementDTO> getAllMouvements();
     MouvementDTO receptionnerLot(Long lotId, Double quantite, String codeEmplacementDestination, String utilisateurEmail, String notes);
     MouvementDTO transfertLot(String numeroLot, Double quantite,String codeEmplamcementSouce, String codeEmplacementDestination,String UtilisateurEmail, String notes);// TODO: utiliser ça aussi pour sortie echantillon
+    TransfertMultipleLotResponseDTO transfertMultipleLots(TransfertMultipleLotDTO transfertMultipleLotDTO);
     Integer getAllMouvementCount();
 }

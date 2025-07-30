@@ -19,7 +19,7 @@ public class EmplacementSeeder {
 
 
 
-    @PostConstruct
+    //@PostConstruct
     public void init() {
         seedEmplacements();
     }
@@ -32,6 +32,7 @@ public class EmplacementSeeder {
             emplacementService.createEmplacement(EmplacementDTO.builder().nom("Stock Principal").codeTypeEmplacement("STOCK").build());
             emplacementService.createEmplacement(EmplacementDTO.builder().nom("Quai Expédition").codeTypeEmplacement("SHIPPING").build());
             emplacementService.createEmplacement(EmplacementDTO.builder().nom("Zone retour fournisseur").codeTypeEmplacement("retour-fournisseur").build());
+            emplacementService.createEmplacement(EmplacementDTO.builder().nom("Zone de sortie principale").codeTypeEmplacement("ZS").build());
             logger.info("Emplacements seeded.");
         }
     }

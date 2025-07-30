@@ -18,6 +18,7 @@ public class CorsFilter implements ContainerResponseFilter {
             requestContext.abortWith(
                     jakarta.ws.rs.core.Response.ok()
                             .header("Access-Control-Allow-Origin", "http://localhost:5173")
+                            .header("Access-Control-Allow-Origin", "https://statuesque-crisp-80ec76.netlify.app")
                             .header("Access-Control-Allow-Credentials", "true")
                             .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization, x-refresh-token")
                             .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD,PATCH")
@@ -30,6 +31,7 @@ public class CorsFilter implements ContainerResponseFilter {
     @Override
     public void filter(ContainerRequestContext containerRequestContext, ContainerResponseContext containerResponseContext) throws IOException {
         containerResponseContext.getHeaders().add("Access-Control-Allow-Origin", "http://localhost:5173");
+        containerResponseContext.getHeaders().add("Access-Control-Allow-Origin", "https://statuesque-crisp-80ec76.netlify.app");
         containerResponseContext.getHeaders().add("Access-Control-Allow-Credentials", "true");
         containerResponseContext.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization,x-refresh-token");
         containerResponseContext.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD,PATCH");

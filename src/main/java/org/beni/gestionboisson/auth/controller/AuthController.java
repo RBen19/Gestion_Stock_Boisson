@@ -2,9 +2,12 @@ package org.beni.gestionboisson.auth.controller;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import org.beni.gestionboisson.auth.exceptions.*;
 import org.beni.gestionboisson.shared.response.ApiResponse;
@@ -113,6 +116,54 @@ public class AuthController {
         } catch (Exception e) {
             logger.error("An unexpected error occurred during refresh token process: {}", e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error("An unexpected error occurred", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode())).build();
+        }
+    }
+
+    @PATCH
+    @Path("/toggle-status")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response toggleUserStatus(@QueryParam("email") String email) {
+        logger.debug("Received toggle status request for email: {}", email);
+        
+        if (email == null || email.trim().isEmpty()) {
+            logger.warn("Toggle status failed: Email parameter is required");
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(ApiResponse.error("Email parameter is required", Response.Status.BAD_REQUEST.getStatusCode()))
+                    .build();
+        }
+        
+        try {
+            UtilisateurDTO updatedUser = utilisateurService.toggleUserStatus(email);
+            logger.info("User status toggled successfully for email: {}", email);
+            return Response.ok(ApiResponse.success(updatedUser)).build();
+        } catch (UserNotFoundException e) {
+            logger.error("Toggle status failed for email {}: {}", email, e.getMessage());
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(ApiResponse.error(e.getMessage(), Response.Status.NOT_FOUND.getStatusCode()))
+                    .build();
+        } catch (Exception e) {
+            logger.error("An unexpected error occurred during status toggle for email {}: {}", email, e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(ApiResponse.error("An unexpected error occurred", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
+        }
+    }
+
+    @GET
+    @Path("/users")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllUsers() {
+        logger.debug("Received request to get all users");
+        
+        try {
+            var users = utilisateurService.getAllUtilisateurs();
+            logger.info("Retrieved {} users successfully", users.size());
+            return Response.ok(ApiResponse.success(users)).build();
+        } catch (Exception e) {
+            logger.error("An unexpected error occurred while fetching users: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(ApiResponse.error("An unexpected error occurred", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 }

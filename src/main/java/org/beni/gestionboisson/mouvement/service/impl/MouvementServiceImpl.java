@@ -17,6 +17,8 @@ import org.beni.gestionboisson.lignemouvement.service.LigneMouvementService;
 import org.beni.gestionboisson.lot.dao.LotRepositoryImpl;
 import org.beni.gestionboisson.lot.dto.LotDTO;
 import org.beni.gestionboisson.lot.dto.LotResponseDTO;
+import org.beni.gestionboisson.lot.dto.TransfertMultipleLotDTO;
+import org.beni.gestionboisson.lot.dto.TransfertMultipleLotResponseDTO;
 import org.beni.gestionboisson.lot.entities.Lot;
 import org.beni.gestionboisson.lot.mappers.LotMapper;
 import org.beni.gestionboisson.lot.repository.LotRepository;
@@ -38,6 +40,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 @ApplicationScoped
 public class MouvementServiceImpl implements MouvementService {
@@ -262,6 +265,143 @@ public class MouvementServiceImpl implements MouvementService {
         LigneMouvementDTO createdLigneMouvement  = ligneMouvementService.createLigneMouvement(ligne);
         return createdMouvement;
 
+    }
+
+    @Override
+    @Transactional
+    public TransfertMultipleLotResponseDTO transfertMultipleLots(TransfertMultipleLotDTO transfertDTO) {
+        logger.info("Début du transfert multiple de lots pour la boisson: {}, quantité désirée: {}", 
+                   transfertDTO.getBoissonCode(), transfertDTO.getQuantiteTotaleDesire());
+
+        // Validation des entrées
+        if (transfertDTO.getLots() == null || transfertDTO.getLots().isEmpty()) {
+            throw new IllegalArgumentException("La liste des lots ne peut pas être vide");
+        }
+
+        if (transfertDTO.getQuantiteTotaleDesire() <= 0) {
+            throw new IllegalArgumentException("La quantité désirée doit être supérieure à zéro");
+        }
+
+        // Vérification de l'emplacement de destination
+        Emplacement destination = emplacementRepository.findByCodeEmplacement(transfertDTO.getCodeEmplacementDestination())
+                .orElseThrow(() -> new EntityNotFoundException("Emplacement introuvable avec code: " + transfertDTO.getCodeEmplacementDestination()));
+
+        // Vérification de l'utilisateur
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(transfertDTO.getUtilisateurEmail())
+                .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable avec email: " + transfertDTO.getUtilisateurEmail()));
+
+        // Création du mouvement principal
+        TypeMouvement typeMouvement = typeMouvementRepository.findByCode("TRANSFERT_MULTIPLE")
+                .or(() -> typeMouvementRepository.findByCode("TRANSFERT"))
+                .orElseThrow(() -> new EntityNotFoundException("TypeMouvement TRANSFERT introuvable"));
+
+        MouvementCreateDTO mouvementDTO = MouvementCreateDTO.builder()
+                .typeMouvementCode(typeMouvement.getCode())
+                .utilisateurEmail(utilisateur.getEmail())
+                .notes(transfertDTO.getNotes() + " - Transfert multiple de " + transfertDTO.getLots().size() + " lots")
+                .build();
+
+        MouvementDTO mouvementPrincipal = this.createMouvement(mouvementDTO);
+
+        // Traitement des lots un par un selon l'ordre FIFO/LIFO/FEFO
+        List<TransfertMultipleLotResponseDTO.TransfertLotDetail> detailsTransferts = new ArrayList<>();
+        double quantiteRestante = transfertDTO.getQuantiteTotaleDesire();
+        double quantiteTransfereeTotale = 0.0;
+
+        for (LotResponseDTO lotDTO : transfertDTO.getLots()) {
+            if (quantiteRestante <= 0) {
+                break; // Quantité désirée atteinte
+            }
+
+            // Récupération du lot depuis la base
+            Lot lot = lotRepository.findByNumeroLot(lotDTO.getNumeroLot())
+                    .orElseThrow(() -> new EntityNotFoundException("Lot introuvable: " + lotDTO.getNumeroLot()));
+
+            double quantiteDisponible = lot.getQuantiteActuelle();
+            double quantiteATransferer = Math.min(quantiteRestante, quantiteDisponible);
+
+            if (quantiteATransferer <= 0) {
+                continue; // Lot épuisé, passer au suivant
+            }
+
+            // Effectuer le transfert pour ce lot
+            boolean transfertTotal = quantiteATransferer >= quantiteDisponible;
+            String numeroLotTransfere;
+            String emplacementSource = lot.getCodeEmplacementActuel(); // Capturer l'emplacement source avant modification
+
+            if (transfertTotal) {
+                // Transfert total - mise à jour de l'emplacement
+                lot.setCodeEmplacementActuel(destination.getCodeEmplacement());
+                lotRepository.save(lot);
+                numeroLotTransfere = lot.getNumeroLot();
+                logger.info("Transfert total du lot {}: {} unités", lot.getNumeroLot(), quantiteATransferer);
+            } else {
+                // Transfert partiel - création d'un nouveau lot
+                LotDTO nouveauLotDTO = LotDTO.builder()
+                        .quantiteActuelle(quantiteATransferer)
+                        .quantiteInitiale(quantiteATransferer)
+                        .dateAcquisition(lot.getDateAcquisition())
+                        .dateLimiteConsommation(lot.getDateLimiteConsommation())
+                        .boissonCode(lot.getBoisson().getCodeBoisson())
+                        .typeLotStatusCode(lot.getTypeLotStatus().getSlug())
+                        .fournisseurCode(lot.getFournisseur().getCodeFournisseur())
+                        .codeEmplacementActuel(lot.getCodeEmplacementActuel())
+                        .codeEmplacementDestination(destination.getCodeEmplacement())
+                        .utilisateurEmail(transfertDTO.getUtilisateurEmail())
+                        .build();
+
+                // Réduire la quantité du lot original
+                lot.setQuantiteActuelle(quantiteDisponible - quantiteATransferer);
+                lotRepository.save(lot);
+
+                // Créer le nouveau lot transféré
+                LotResponseDTO nouveauLot = lotService.createLot(nouveauLotDTO);
+                numeroLotTransfere = nouveauLot.getNumeroLot();
+                logger.info("Transfert partiel du lot {}: {} unités transférées vers le nouveau lot {}", 
+                           lot.getNumeroLot(), quantiteATransferer, numeroLotTransfere);
+            }
+
+            // Créer la ligne de mouvement pour ce transfert
+            LigneMouvementCreateDTO ligneDTO = LigneMouvementCreateDTO.builder()
+                    .mouvementId(mouvementPrincipal.getId())
+                    .lotCode(numeroLotTransfere)
+                    .quantite(quantiteATransferer)
+                    .emplacementSourceCode(emplacementSource)
+                    .emplacementDestinationCode(destination.getCodeEmplacement())
+                    .build();
+
+            ligneMouvementService.createLigneMouvement(ligneDTO);
+
+            // Ajouter les détails du transfert
+            TransfertMultipleLotResponseDTO.TransfertLotDetail detail = 
+                TransfertMultipleLotResponseDTO.TransfertLotDetail.builder()
+                    .numeroLotOriginal(lot.getNumeroLot())
+                    .numeroLotTransfere(numeroLotTransfere)
+                    .quantiteTransferee(quantiteATransferer)
+                    .transfertTotal(transfertTotal)
+                    .build();
+
+            detailsTransferts.add(detail);
+
+            // Mettre à jour les compteurs
+            quantiteRestante -= quantiteATransferer;
+            quantiteTransfereeTotale += quantiteATransferer;
+        }
+
+        String message = quantiteRestante > 0 
+            ? String.format("Transfert partiel effectué: %.2f/%.2f unités transférées. Quantité manquante: %.2f", 
+                           quantiteTransfereeTotale, transfertDTO.getQuantiteTotaleDesire(), quantiteRestante)
+            : String.format("Transfert complet effectué: %.2f unités transférées sur %d lots", 
+                           quantiteTransfereeTotale, detailsTransferts.size());
+
+        logger.info("Transfert multiple terminé: {}", message);
+
+        return TransfertMultipleLotResponseDTO.builder()
+                .mouvement(mouvementPrincipal)
+                .detailsTransferts(detailsTransferts)
+                .quantiteTransfereTotale(quantiteTransfereeTotale)
+                .message(message)
+                .build();
     }
 
     @Override

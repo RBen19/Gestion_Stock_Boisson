@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.beni.gestionboisson.auth.dto.UtilisateurDTO;
+import org.beni.gestionboisson.auth.dto.UtilisateurListDTO;
 import org.beni.gestionboisson.auth.entities.Role;
 import org.beni.gestionboisson.auth.entities.Utilisateur;
 import org.beni.gestionboisson.auth.mappers.UtilisateurMapper;
@@ -14,8 +15,11 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.beni.gestionboisson.auth.exceptions.RoleNotFoundException;
+import org.beni.gestionboisson.auth.exceptions.UserNotFoundException;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class UtilisateurServiceImpl implements UtilisateurService {
@@ -47,7 +51,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         Role role = roleOptional.get();
 
         Utilisateur utilisateur = UtilisateurMapper.toEntity(utilisateurDTO);
-        utilisateur.setStatus(true);
+        utilisateur.setStatus(false);
         utilisateur.setMotDePasseHache(BCrypt.hashpw(utilisateurDTO.getPassword(), BCrypt.gensalt()));
         utilisateur.setRole(role); // Set the found role
         utilisateur = utilisateurRepository.save(utilisateur);
@@ -65,5 +69,36 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     public boolean checkNomUtilisateurExists(String nomUtilisateur) {
         logger.info("Checking if username {} exists.", nomUtilisateur);
         return utilisateurRepository.findByNomUtilisateur(nomUtilisateur).isPresent();
+    }
+
+    @Override
+    public UtilisateurDTO toggleUserStatus(String email) {
+        logger.info("Toggling status for user with email: {}", email);
+        Optional<Utilisateur> utilisateurOptional = utilisateurRepository.findByEmail(email);
+        
+        if (utilisateurOptional.isEmpty()) {
+            logger.error("User with email {} not found", email);
+            throw new UserNotFoundException("User with email " + email + " not found");
+        }
+        
+        Utilisateur utilisateur = utilisateurOptional.get();
+        boolean currentStatus = utilisateur.isStatus();
+        utilisateur.setStatus(!currentStatus);
+        
+        utilisateur = utilisateurRepository.save(utilisateur);
+        logger.info("User status toggled successfully for email: {}. New status: {}", email, utilisateur.isStatus());
+        
+        return UtilisateurMapper.toDto(utilisateur);
+    }
+
+    @Override
+    public List<UtilisateurListDTO> getAllUtilisateurs() {
+        logger.info("Fetching all users with their roles");
+        List<Utilisateur> utilisateurs = utilisateurRepository.findAll();
+        
+        logger.info("Found {} users", utilisateurs.size());
+        return utilisateurs.stream()
+                .map(UtilisateurMapper::toListDto)
+                .collect(Collectors.toList());
     }
 }

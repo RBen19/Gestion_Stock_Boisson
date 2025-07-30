@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import org.beni.gestionboisson.auth.entities.Utilisateur;
 import org.beni.gestionboisson.auth.repository.UtilisateurRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -59,5 +60,11 @@ public class UtilisateurRepositoryImpl implements UtilisateurRepository {
             }
             throw e; // Propagation de l'exception
         }
+    }
+
+    @Override
+    public List<Utilisateur> findAll() {
+        return em.createQuery("SELECT u FROM Utilisateur u LEFT JOIN FETCH u.role ORDER BY u.createdAt DESC", Utilisateur.class)
+                .getResultList();
     }
 }

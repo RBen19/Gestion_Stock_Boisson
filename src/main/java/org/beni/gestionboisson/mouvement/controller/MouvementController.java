@@ -7,6 +7,8 @@ import jakarta.ws.rs.core.Response;
 import org.beni.gestionboisson.auth.security.Secured;
 import org.beni.gestionboisson.auth.security.TokenContext;
 import org.beni.gestionboisson.lot.dto.TransfertLotDTO;
+import org.beni.gestionboisson.lot.dto.TransfertMultipleLotDTO;
+import org.beni.gestionboisson.lot.dto.TransfertMultipleLotResponseDTO;
 import org.beni.gestionboisson.mouvement.dto.MouvementCreateDTO;
 import org.beni.gestionboisson.mouvement.dto.MouvementDTO;
 import org.beni.gestionboisson.mouvement.service.MouvementService;
@@ -88,6 +90,61 @@ public class MouvementController {
         } catch (Exception e) {
             logger.error("Unexpected error retrieving mouvement: {}", e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ApiResponse.error( "Internal server error", 500)).build();
+        }
+    }
+
+    @POST
+    @Secured
+    @Path("/transfert-multiple")
+    public Response transfertMultipleLots(TransfertMultipleLotDTO transfertMultipleLotDTO) {
+        String username = TokenContext.getUsername();
+        String role = TokenContext.getRole();
+        String email = TokenContext.getEmail();
+        
+        if (username == null || role == null || email == null) {
+            logger.warn("User details not found in token context.");
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(ApiResponse.error("User authentication details are missing.", 
+                            Response.Status.UNAUTHORIZED.getStatusCode()))
+                    .build();
+        }
+
+        // Définir l'email de l'utilisateur dans le DTO
+        transfertMultipleLotDTO.setUtilisateurEmail(email);
+
+        try {
+            logger.info("Début du transfert multiple de {} lots pour l'utilisateur {}", 
+                       transfertMultipleLotDTO.getLots() != null ? transfertMultipleLotDTO.getLots().size() : 0, 
+                       email);
+
+            TransfertMultipleLotResponseDTO response = mouvementService.transfertMultipleLots(transfertMultipleLotDTO);
+            
+            logger.info("Transfert multiple terminé avec succès. Mouvement ID: {}", response.getMouvement().getId());
+            return Response.status(Response.Status.CREATED)
+                    .entity(ApiResponse.success(response))
+                    .build();
+
+        } catch (IllegalArgumentException e) {
+            logger.warn("Validation error during multiple lot transfer: {}", e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(ApiResponse.error(e.getMessage(), Response.Status.BAD_REQUEST.getStatusCode()))
+                    .build();
+        } catch (EntityNotFoundException e) {
+            logger.warn("Entity not found during multiple lot transfer: {}", e.getMessage());
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(ApiResponse.notFound(e.getMessage()))
+                    .build();
+        } catch (org.beni.gestionboisson.lot.exceptions.LotCreationException e) {
+            logger.error("Error creating lot during multiple transfer: {}", e.getMessage(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(ApiResponse.error(e.getMessage(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
+        } catch (Exception e) {
+            logger.error("Unexpected error during multiple lot transfer: {}", e.getMessage(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(ApiResponse.error("Internal server error during multiple lot transfer", 
+                            Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
