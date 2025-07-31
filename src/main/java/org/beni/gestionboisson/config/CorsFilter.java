@@ -12,14 +12,30 @@ import java.util.Arrays;
 import java.util.List;
 
 @Provider
-public class CorsFilter   implements ContainerRequestFilter, ContainerResponseFilter {
-/*
-*     private static final List<String> allowedOrigins = Arrays.asList(
+public class CorsFilter   implements ContainerResponseFilter {
+    private static final List<String> allowedOrigins = Arrays.asList(
             "http://localhost:5173",
             "https://statuesque-crisp-80ec76.netlify.app"
     );
 
-    public void filter(ContainerRequestContext requestContext) throws IOException {
+    @Override
+    public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
+        String origin = requestContext.getHeaderString("Origin");
+
+        if (origin != null && allowedOrigins.contains(origin)) {
+            // Log utile pour debug
+            System.out.println("CORS request from origin: " + origin);
+
+            // On utilise `putSingle` pour éviter les duplications d'en-têtes
+            responseContext.getHeaders().putSingle("Access-Control-Allow-Origin", origin);
+            responseContext.getHeaders().putSingle("Access-Control-Allow-Credentials", "true");
+            responseContext.getHeaders().putSingle("Access-Control-Allow-Headers", "origin, content-type, accept, authorization, x-refresh-token");
+            responseContext.getHeaders().putSingle("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH");
+        }
+    }
+ /*
+ *
+ *  public void filter(ContainerRequestContext requestContext) throws IOException {
         // Gérer les requêtes préflight OPTIONS
         String origin = requestContext.getHeaderString("Origin");
         if (requestContext.getMethod().equalsIgnoreCase("OPTIONS")  && allowedOrigins.contains(origin)) {
@@ -52,9 +68,11 @@ public class CorsFilter   implements ContainerRequestFilter, ContainerResponseFi
      //   containerResponseContext.getHeaders().add("Access-Control-Allow-Origin", "https://statuesque-crisp-80ec76.netlify.app");
 
     }
+ *
+ * */
+/*
 *
-* */
-private static final List<String> allowedOrigins = Arrays.asList(
+* private static final List<String> allowedOrigins = Arrays.asList(
         "http://localhost:5173",
         "https://statuesque-crisp-80ec76.netlify.app"
 );
@@ -88,4 +106,6 @@ private static final List<String> allowedOrigins = Arrays.asList(
             responseContext.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH");
         }
     }
+*
+* */
 }
