@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Provider
-public class CorsFilter implements ContainerResponseFilter {
+public class CorsFilter   implements ContainerRequestFilter, ContainerResponseFilter {
 /*
 *     private static final List<String> allowedOrigins = Arrays.asList(
             "http://localhost:5173",
@@ -58,6 +58,24 @@ private static final List<String> allowedOrigins = Arrays.asList(
         "http://localhost:5173",
         "https://statuesque-crisp-80ec76.netlify.app"
 );
+
+    @Override
+    public void filter(ContainerRequestContext requestContext) throws IOException {
+        String origin = requestContext.getHeaderString("Origin");
+
+        if (origin != null && allowedOrigins.contains(origin)
+                && "OPTIONS".equalsIgnoreCase(requestContext.getMethod())) {
+
+            requestContext.abortWith(
+                    jakarta.ws.rs.core.Response.ok()
+                            .header("Access-Control-Allow-Origin", origin)
+                            .header("Access-Control-Allow-Credentials", "true")
+                            .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization, x-refresh-token")
+                            .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH")
+                            .build()
+            );
+        }
+    }
 
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
