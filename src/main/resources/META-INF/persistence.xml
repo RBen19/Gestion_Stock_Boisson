@@ -9,11 +9,11 @@
             <!-- Configuration automatique via DATABASE_URL de Render -->
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             
-            <!-- Configuration locale par défaut (développement) -->
+            <!-- Configuration dynamique via variables d'environnement ou valeurs par défaut -->
             <property name="javax.persistence.jdbc.url" 
-                      value="jdbc:postgresql://localhost:5432/gestion_boisson"/>
-            <property name="javax.persistence.jdbc.user" value="postgres"/>
-            <property name="javax.persistence.jdbc.password" value="Passer"/>
+                      value="${javax.persistence.jdbc.url:jdbc:postgresql://localhost:5432/gestion_boisson}"/>
+            <property name="javax.persistence.jdbc.user" value="${javax.persistence.jdbc.user:postgres}"/>
+            <property name="javax.persistence.jdbc.password" value="${javax.persistence.jdbc.password:Passer}"/>
 
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
             <property name="hibernate.hbm2ddl.auto" value="update"/>

@@ -9,7 +9,7 @@ services:
     name: gestion-boisson-backend
     runtime: docker
     plan: free
-    branch: main
+    branch: deploy
     healthCheckPath: /
     envVars:
       - key: DATABASE_URL
