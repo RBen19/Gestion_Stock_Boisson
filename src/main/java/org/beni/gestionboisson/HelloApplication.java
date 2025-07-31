@@ -9,15 +9,16 @@ import org.slf4j.LoggerFactory;
 
 @ApplicationPath("/api/v1")
 public class HelloApplication extends Application {
-
-    private static final Logger logger = LoggerFactory.getLogger(HelloApplication.class);
+    /*
+    *
+    *  private static final Logger logger = LoggerFactory.getLogger(HelloApplication.class);
 
     @Inject
     private DatabaseSeederService databaseSeederService;
 
     public HelloApplication() {
         logger.info("🚀 HelloApplication initialisée - Gestion Boisson API v1");
-        
+
         // Démarrer le seeding après un délai pour permettre aux @PostConstruct de se terminer
         new Thread(() -> {
             try {
@@ -33,5 +34,8 @@ public class HelloApplication extends Application {
             }
         }).start();
     }
+    *
+    * */
+
 }
 
