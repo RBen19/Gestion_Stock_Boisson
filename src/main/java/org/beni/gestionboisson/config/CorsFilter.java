@@ -25,7 +25,8 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
         if ("OPTIONS".equals(requestContext.getMethod()) && origin != null && allowedOrigins.contains(origin)) {
             requestContext.abortWith(
                 jakarta.ws.rs.core.Response.ok()
-                    .header("Access-Control-Allow-Origin", origin)
+                        //origin
+                    .header("Access-Control-Allow-Origin", "*")
                     .header("Access-Control-Allow-Credentials", "true")
                     .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization, x-refresh-token")
                     .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH")
