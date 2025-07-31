@@ -8,17 +8,24 @@ import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Provider;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Provider
 public class CorsFilter implements ContainerResponseFilter {
+    private static final List<String> allowedOrigins = Arrays.asList(
+            "http://localhost:5173",
+            "https://statuesque-crisp-80ec76.netlify.app"
+    );
 
     public void filter(ContainerRequestContext requestContext) throws IOException {
         // Gérer les requêtes préflight OPTIONS
-        if (requestContext.getMethod().equalsIgnoreCase("OPTIONS")) {
+        String origin = requestContext.getHeaderString("Origin");
+        if (requestContext.getMethod().equalsIgnoreCase("OPTIONS")  && allowedOrigins.contains(origin)) {
             requestContext.abortWith(
                     jakarta.ws.rs.core.Response.ok()
-                            .header("Access-Control-Allow-Origin", "http://localhost:5173")
-                            .header("Access-Control-Allow-Origin", "https://statuesque-crisp-80ec76.netlify.app")
+                            .header("Access-Control-Allow-Origin", origin)
+                          //  .header("Access-Control-Allow-Origin", "https://statuesque-crisp-80ec76.netlify.app")
                             .header("Access-Control-Allow-Credentials", "true")
                             .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization, x-refresh-token")
                             .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD,PATCH")
@@ -30,10 +37,18 @@ public class CorsFilter implements ContainerResponseFilter {
 
     @Override
     public void filter(ContainerRequestContext containerRequestContext, ContainerResponseContext containerResponseContext) throws IOException {
-        containerResponseContext.getHeaders().add("Access-Control-Allow-Origin", "http://localhost:5173");
-        containerResponseContext.getHeaders().add("Access-Control-Allow-Origin", "https://statuesque-crisp-80ec76.netlify.app");
-        containerResponseContext.getHeaders().add("Access-Control-Allow-Credentials", "true");
-        containerResponseContext.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization,x-refresh-token");
-        containerResponseContext.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD,PATCH");
+        String origin = containerRequestContext.getHeaderString("Origin");
+
+        if (origin != null && allowedOrigins.contains(origin)) {
+            containerResponseContext.getHeaders().add("Access-Control-Allow-Credentials", "true");
+            containerResponseContext.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization,x-refresh-token");
+            containerResponseContext.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD,PATCH");
+            containerResponseContext.getHeaders().add("Access-Control-Allow-Origin", origin);
+            //responseContext.getHeaders().add("Access-Control-Allow-Credentials", "true");
+
+        }
+      //  containerResponseContext.getHeaders().add("Access-Control-Allow-Origin", "http://localhost:5173");
+     //   containerResponseContext.getHeaders().add("Access-Control-Allow-Origin", "https://statuesque-crisp-80ec76.netlify.app");
+
     }
 }
