@@ -70,11 +70,13 @@ public class TypeEmplacementServiceImpl implements TypeEmplacementService {
     @Override
     public void seedTypeEmplacements() {
         if (typeEmplacementRepository.findAll().isEmpty()) {
-            createTypeEmplacement(TypeEmplacementDTO.builder().code("STOCK").libelle("Stockage").description("Zone de stockage générale").build());
-            createTypeEmplacement(TypeEmplacementDTO.builder().code("REFRIGERATOR").libelle("Réfrigérateur").description("Zone de stockage réfrigérée").build());
-            createTypeEmplacement(TypeEmplacementDTO.builder().code("DISPLAY").libelle("Présentoir").description("Zone d'exposition des produits").build());
-            createTypeEmplacement(TypeEmplacementDTO.builder().code("RECEIVING").libelle("Réception").description("Zone de réception des marchandises").build());
-            createTypeEmplacement(TypeEmplacementDTO.builder().code("SHIPPING").libelle("Expédition").description("Zone d'expédition des marchandises").build());
+            createTypeEmplacement(TypeEmplacementDTO.builder().libelle("Stockage").description("Zone de stockage générale").build());
+            createTypeEmplacement(TypeEmplacementDTO.builder().libelle("Réfrigérateur").description("Zone de stockage réfrigérée").build());
+            createTypeEmplacement(TypeEmplacementDTO.builder().libelle("Présentoir").description("Zone d'exposition des produits").build());
+            createTypeEmplacement(TypeEmplacementDTO.builder().libelle("Réception").description("Zone de réception des marchandises").build());
+            createTypeEmplacement(TypeEmplacementDTO.builder().libelle("Expédition").description("Zone d'expédition des marchandises").build());
+            createTypeEmplacement(TypeEmplacementDTO.builder().libelle("Retour fournisseur").description("Zone dédiée au renvoi ou au stockage temporaire des marchandises à retourner au fournisseur").build());
+            createTypeEmplacement(TypeEmplacementDTO.builder().libelle("Zone sortie").description("Zone dédiée a la sortie des marchandises").build());
             System.out.println("TypeEmplacements seeded.");
         }
     }

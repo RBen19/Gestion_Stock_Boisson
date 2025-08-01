@@ -26,13 +26,13 @@ public class TypeLotStatusSeeder {
             }
 
             // Statuts essentiels pour la gestion des lots
-            createTypeLotStatusIfNotExists("Actif", "actif");
-            createTypeLotStatusIfNotExists("Inactif", "inactif");
-            createTypeLotStatusIfNotExists("Expiré", "expire");
-            createTypeLotStatusIfNotExists("En quarantaine", "quarantaine");
-            createTypeLotStatusIfNotExists("Réservé", "reserve");
-            createTypeLotStatusIfNotExists("Endommagé", "endommage");
-            createTypeLotStatusIfNotExists("Retour fournisseur", "retour_fournisseur");
+            createTypeLotStatusIfNotExists("Actif");
+            createTypeLotStatusIfNotExists("Inactif");
+            createTypeLotStatusIfNotExists("Expiré");
+            createTypeLotStatusIfNotExists("En quarantaine");
+            createTypeLotStatusIfNotExists("Réservé");
+            createTypeLotStatusIfNotExists("Endommagé");
+            createTypeLotStatusIfNotExists("Retour fournisseur");
 
             logger.info("Seeding des TypeLotStatus terminé avec succès");
 
@@ -42,15 +42,14 @@ public class TypeLotStatusSeeder {
         }
     }
 
-    private void createTypeLotStatusIfNotExists(String libelle, String slug) {
+    private void createTypeLotStatusIfNotExists(String libelle) {
         try {
             TypeLotStatusDTO dto = TypeLotStatusDTO.builder()
                     .libelle(libelle)
-                    .slug(slug)
                     .build();
             
             typeLotStatusService.createTypeLotStatus(dto);
-            logger.info("TypeLotStatus créé: {} ({})", libelle, slug);
+            logger.info("TypeLotStatus créé: {}", libelle);
             
         } catch (Exception e) {
             logger.warn("TypeLotStatus '{}' existe peut-être déjà: {}", libelle, e.getMessage());

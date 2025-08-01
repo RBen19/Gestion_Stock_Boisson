@@ -54,10 +54,6 @@ public class EmplacementServiceImpl implements EmplacementService {
     public EmplacementDTO createEmplacement(EmplacementDTO dto) {
         logger.info("Attempting to create emplacement with name: {}", dto.getNom());
         String generatedCode = generateCodeEmplacement(dto.getNom());
-        if (emplacementRepository.findByCodeEmplacement(generatedCode).isPresent()) {
-            logger.warn("Emplacement creation failed: Code {} already exists.", generatedCode);
-            throw new DuplicateEmplacementCodeException("Emplacement with code " + generatedCode + " already exists.");
-        }
 
         TypeEmplacement typeEmplacement = typeEmplacementRepository.findByCode(dto.getCodeTypeEmplacement())
                 .orElseThrow(() -> {

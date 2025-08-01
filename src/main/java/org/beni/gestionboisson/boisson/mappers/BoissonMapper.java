@@ -16,7 +16,7 @@ public class BoissonMapper {
                 .codeBoisson(boisson.getCodeBoisson())
                // .codeCategorie(boisson.getCodeCategorie())
                 
-                .codeCategorie(boisson.getCategorie().getCodeCategorie())
+                .codeCategorie(boisson.getCategorie() != null ? boisson.getCategorie().getCodeCategorie() : null)
               //  .idCategorie(boisson.getCategorie() != null ? boisson.getCategorie().getIdCategorie() : null)
                // .createdAt(boisson.getCreatedAt())
              //   .updatedAt(boisson.getUpdatedAt())

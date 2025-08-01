@@ -26,13 +26,13 @@ public class EmplacementSeeder {
 
     private void seedEmplacements() {
         if (emplacementService.getAllEmplacements().isEmpty()) {
-            emplacementService.createEmplacement(EmplacementDTO.builder().nom("Rayon A").codeTypeEmplacement("DISPLAY").build());
-            emplacementService.createEmplacement(EmplacementDTO.builder().nom("Frigo 1").codeTypeEmplacement("REFRIGERATOR").build());
-            emplacementService.createEmplacement(EmplacementDTO.builder().nom("Zone Réception").codeTypeEmplacement("RECEIVING").build());
-            emplacementService.createEmplacement(EmplacementDTO.builder().nom("Stock Principal").codeTypeEmplacement("STOCK").build());
-            emplacementService.createEmplacement(EmplacementDTO.builder().nom("Quai Expédition").codeTypeEmplacement("SHIPPING").build());
+            emplacementService.createEmplacement(EmplacementDTO.builder().nom("Rayon A").codeTypeEmplacement("presentoir").build());
+            emplacementService.createEmplacement(EmplacementDTO.builder().nom("Frigo 1").codeTypeEmplacement("refrigerateur").build());
+            emplacementService.createEmplacement(EmplacementDTO.builder().nom("Zone Réception").codeTypeEmplacement("reception").build());
+            emplacementService.createEmplacement(EmplacementDTO.builder().nom("Stock Principal").codeTypeEmplacement("stockage").build());
+            emplacementService.createEmplacement(EmplacementDTO.builder().nom("Quai Expédition").codeTypeEmplacement("expedition").build());
             emplacementService.createEmplacement(EmplacementDTO.builder().nom("Zone retour fournisseur").codeTypeEmplacement("retour-fournisseur").build());
-            emplacementService.createEmplacement(EmplacementDTO.builder().nom("Zone de sortie principale").codeTypeEmplacement("ZS").build());
+            emplacementService.createEmplacement(EmplacementDTO.builder().nom("Zone de sortie principale").codeTypeEmplacement("zone-sortie").build());
             logger.info("Emplacements seeded.");
         }
     }

@@ -37,9 +37,12 @@ public class TypeEmplacementRepositoryImpl implements TypeEmplacementRepository 
 
     @Override
     public TypeEmplacement save(TypeEmplacement typeEmplacement) {
-        Slugify slugify = new Slugify() ;
-        String slug = slugify.slugify(typeEmplacement.getLibelle());
-        typeEmplacement.setCode(slug);
+        // Ne pas écraser le code s'il est déjà défini
+        if (typeEmplacement.getCode() == null || typeEmplacement.getCode().trim().isEmpty()) {
+            Slugify slugify = new Slugify();
+            String slug = slugify.slugify(typeEmplacement.getLibelle());
+            typeEmplacement.setCode(slug);
+        }
 
         EntityTransaction transaction = em.getTransaction();
         try {

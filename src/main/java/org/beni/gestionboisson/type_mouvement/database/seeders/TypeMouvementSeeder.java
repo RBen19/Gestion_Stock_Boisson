@@ -26,15 +26,15 @@ public class TypeMouvementSeeder {
             }
 
             // Types de mouvements essentiels
-            createTypeMouvementIfNotExists("Réception", "RECEPTION");
-            createTypeMouvementIfNotExists("Transfert", "TRANSFERT");
-            createTypeMouvementIfNotExists("Transfert Multiple", "TRANSFERT_MULTIPLE");
-            createTypeMouvementIfNotExists("Sortie", "SORTIE");
-            createTypeMouvementIfNotExists("Sortie Échantillon", "SORTIE_ECHANTILLON");
-            createTypeMouvementIfNotExists("Retour Fournisseur", "RETOUR_FOURNISSEUR");
-            createTypeMouvementIfNotExists("Destruction", "DESTRUCTION");
-            createTypeMouvementIfNotExists("Inventaire", "INVENTAIRE");
-            createTypeMouvementIfNotExists("Ajustement", "AJUSTEMENT");
+            createTypeMouvementIfNotExists("Réception");
+            createTypeMouvementIfNotExists("Transfert");
+            createTypeMouvementIfNotExists("Transfert Multiple");
+            createTypeMouvementIfNotExists("Sortie");
+            createTypeMouvementIfNotExists("Sortie Échantillon");
+            createTypeMouvementIfNotExists("Retour Fournisseur");
+            createTypeMouvementIfNotExists("Destruction");
+            createTypeMouvementIfNotExists("Inventaire");
+            createTypeMouvementIfNotExists("Ajustement");
 
             logger.info("Seeding des TypeMouvement terminé avec succès");
 
@@ -44,15 +44,14 @@ public class TypeMouvementSeeder {
         }
     }
 
-    private void createTypeMouvementIfNotExists(String libelle, String code) {
+    private void createTypeMouvementIfNotExists(String libelle) {
         try {
             TypeMouvementDTO dto = TypeMouvementDTO.builder()
                     .libelle(libelle)
-                    .code(code)
                     .build();
             
             typeMouvementService.createTypeMouvement(dto);
-            logger.info("TypeMouvement créé: {} ({})", libelle, code);
+            logger.info("TypeMouvement créé: {}", libelle);
             
         } catch (Exception e) {
             logger.warn("TypeMouvement '{}' existe peut-être déjà: {}", libelle, e.getMessage());

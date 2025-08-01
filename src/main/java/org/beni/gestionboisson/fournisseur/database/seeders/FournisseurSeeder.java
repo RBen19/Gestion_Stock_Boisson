@@ -26,18 +26,29 @@ public class FournisseurSeeder {
     public void seedFournisseurs() {
         LOGGER.info("Démarrage du seeder de fournisseurs...");
 
-        CreateFournisseurDTO fournisseur1 = new CreateFournisseurDTO();
-        fournisseur1.setNom("Coca-Cola");
-        fournisseur1.setEmailContact("contact@coca-cola.com");
-        fournisseur1.setNumeroTelephone("123456789");
-        fournisseurService.createFournisseur(fournisseur1);
+        try {
+            // Vérifier si des fournisseurs existent déjà
+            if (!fournisseurService.getAllFournisseurs().isEmpty()) {
+                LOGGER.info("Fournisseurs déjà présents, seeding ignoré");
+                return;
+            }
 
-        CreateFournisseurDTO fournisseur2 = new CreateFournisseurDTO();
-        fournisseur2.setNom("Fanta");
-        fournisseur2.setEmailContact("contact@fanta.com");
-        fournisseur2.setNumeroTelephone("987654321");
-        fournisseurService.createFournisseur(fournisseur2);
+            CreateFournisseurDTO fournisseur1 = new CreateFournisseurDTO();
+            fournisseur1.setNom("Coca-Cola");
+            fournisseur1.setEmailContact("contact@coca-cola.com");
+            fournisseur1.setNumeroTelephone("123456789");
+            fournisseurService.createFournisseur(fournisseur1);
 
-        LOGGER.info("Seeder de fournisseurs terminé.");
+            CreateFournisseurDTO fournisseur2 = new CreateFournisseurDTO();
+            fournisseur2.setNom("Fanta");
+            fournisseur2.setEmailContact("contact@fanta.com");
+            fournisseur2.setNumeroTelephone("987654321");
+            fournisseurService.createFournisseur(fournisseur2);
+
+            LOGGER.info("Seeder de fournisseurs terminé.");
+        } catch (Exception e) {
+            LOGGER.error("Erreur lors du seeding des fournisseurs: {}", e.getMessage(), e);
+            throw new RuntimeException("Échec du seeding des fournisseurs", e);
+        }
     }
 }
