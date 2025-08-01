@@ -20,7 +20,10 @@ public class UtilisateurRepositoryImpl implements UtilisateurRepository {
 
     @Override
     public Optional<Utilisateur> findById(Long id) {
-        return Optional.ofNullable(em.find(Utilisateur.class, id));
+        return em.createQuery("SELECT u FROM Utilisateur u JOIN FETCH u.role WHERE u.idUtilisateur = :id", Utilisateur.class)
+                .setParameter("id", id)
+                .getResultStream()
+                .findFirst();
     }
 
     @Inject
@@ -28,7 +31,7 @@ public class UtilisateurRepositoryImpl implements UtilisateurRepository {
 
     @Override
     public Optional<Utilisateur> findByNomUtilisateur(String nomUtilisateur) {
-        return em.createQuery("SELECT u FROM Utilisateur u WHERE u.nomUtilisateur = :nomUtilisateur", Utilisateur.class)
+        return em.createQuery("SELECT u FROM Utilisateur u JOIN FETCH u.role WHERE u.nomUtilisateur = :nomUtilisateur", Utilisateur.class)
                 .setParameter("nomUtilisateur", nomUtilisateur)
                 .getResultStream()
                 .findFirst();
@@ -36,7 +39,7 @@ public class UtilisateurRepositoryImpl implements UtilisateurRepository {
 
     @Override
     public Optional<Utilisateur> findByEmail(String email) {
-        return em.createQuery("SELECT u FROM Utilisateur u WHERE u.email = :email", Utilisateur.class)
+        return em.createQuery("SELECT u FROM Utilisateur u JOIN FETCH u.role WHERE u.email = :email", Utilisateur.class)
                 .setParameter("email", email)
                 .getResultStream()
                 .findFirst();
