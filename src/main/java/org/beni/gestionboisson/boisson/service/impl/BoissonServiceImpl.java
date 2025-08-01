@@ -78,6 +78,10 @@ public class BoissonServiceImpl implements BoissonService {
     @Transactional
     public void seedBoissons() {
         logger.info("Starting boisson seeding process.");
+        if(!this.boissonRepository.findAll().isEmpty()) {
+            logger.info("boisson déjà présente seed ignoré");
+            return;
+        }
         List<BoissonDTO> boissonsToSeed = List.of(
                 BoissonDTO.builder().nom("Eau Plate").codeCategorie("EAU_PLATE").build(),
                 BoissonDTO.builder().nom("Eau Gazeuse").codeCategorie("EAU_GAZEUSE").build(),

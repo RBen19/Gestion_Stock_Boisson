@@ -2,6 +2,7 @@ package org.beni.gestionboisson.shared.database;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.beni.gestionboisson.boisson.service.CategorieService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +55,8 @@ public class DatabaseSeederService {
 
     @Inject
     private MouvementSeeder mouvementSeeder;
+    @Inject
+    private CategorieService categorieService;
 
     /**
      * Exécute TOUS les seeders dans l'ordre optimal pour les dépendances
@@ -85,7 +88,8 @@ public class DatabaseSeederService {
             // Phase 2: Entités métier de base
             logger.info("Seeding des fournisseurs...");
             fournisseurSeeder.seedFournisseurs();
-            
+            logger.info("seeding categories... ... ");
+            categorieService.seedCategories();
             logger.info("Seeding des boissons et catégories...");
             boissonSeeder.seedBoissons();
             
