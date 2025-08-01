@@ -20,12 +20,26 @@ public class BoissonRepositoryImpl implements BoissonRepository {
 
     @Override
     public List<Boisson> findAll() {
-        return em.createQuery("SELECT b FROM Boisson b", Boisson.class).getResultList();
+        return em.createQuery(
+            "SELECT b FROM Boisson b " +
+            "LEFT JOIN FETCH b.categorie c " +
+            "LEFT JOIN FETCH c.parentCategorie", Boisson.class)
+            .getResultList();
     }
 
     @Override
     public Optional<Boisson> findById(Long id) {
-        return Optional.ofNullable(em.find(Boisson.class, id));
+        try {
+            return Optional.of(em.createQuery(
+                "SELECT b FROM Boisson b " +
+                "LEFT JOIN FETCH b.categorie c " +
+                "LEFT JOIN FETCH c.parentCategorie " +
+                "WHERE b.id = :id", Boisson.class)
+                .setParameter("id", id)
+                .getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -75,9 +89,12 @@ public class BoissonRepositoryImpl implements BoissonRepository {
     public Optional<Boisson> getBoissonByCode(String codeBoisson) {
         try {
             Boisson boisson = em.createQuery(
-                            "SELECT b FROM Boisson b WHERE b.codeBoisson = :codeBoisson", Boisson.class)
-                    .setParameter("codeBoisson", codeBoisson)
-                    .getSingleResult();
+                "SELECT b FROM Boisson b " +
+                "LEFT JOIN FETCH b.categorie c " +
+                "LEFT JOIN FETCH c.parentCategorie " +
+                "WHERE b.codeBoisson = :codeBoisson", Boisson.class)
+                .setParameter("codeBoisson", codeBoisson)
+                .getSingleResult();
             return Optional.of(boisson);
         } catch (NoResultException e) {
             return Optional.empty();

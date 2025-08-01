@@ -22,15 +22,33 @@ public class LotRepositoryImpl implements LotRepository {
 
     @Override
     public Optional<Lot> findById(Long id) {
-        return Optional.ofNullable(em.find(Lot.class, id));
+        try {
+            return Optional.of(em.createQuery(
+                "SELECT l FROM Lot l " +
+                "LEFT JOIN FETCH l.boisson b " +
+                "LEFT JOIN FETCH b.categorie " +
+                "LEFT JOIN FETCH l.fournisseur " +
+                "LEFT JOIN FETCH l.typeLotStatus " +
+                "WHERE l.id = :id", Lot.class)
+                .setParameter("id", id)
+                .getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Lot> findByNumeroLot(String numeroLot) {
         try {
-            return Optional.of(em.createQuery("SELECT l FROM Lot l WHERE l.numeroLot = :numeroLot", Lot.class)
-                    .setParameter("numeroLot", numeroLot)
-                    .getSingleResult());
+            return Optional.of(em.createQuery(
+                "SELECT l FROM Lot l " +
+                "LEFT JOIN FETCH l.boisson b " +
+                "LEFT JOIN FETCH b.categorie " +
+                "LEFT JOIN FETCH l.fournisseur " +
+                "LEFT JOIN FETCH l.typeLotStatus " +
+                "WHERE l.numeroLot = :numeroLot", Lot.class)
+                .setParameter("numeroLot", numeroLot)
+                .getSingleResult());
         } catch (NoResultException e) {
             return Optional.empty();
         }
@@ -38,7 +56,13 @@ public class LotRepositoryImpl implements LotRepository {
 
     @Override
     public List<Lot> findAll() {
-        return em.createQuery("SELECT l FROM Lot l", Lot.class).getResultList();
+        return em.createQuery(
+            "SELECT l FROM Lot l " +
+            "LEFT JOIN FETCH l.boisson b " +
+            "LEFT JOIN FETCH b.categorie " +
+            "LEFT JOIN FETCH l.fournisseur " +
+            "LEFT JOIN FETCH l.typeLotStatus", Lot.class)
+            .getResultList();
     }
 
     @Override
@@ -78,7 +102,14 @@ public class LotRepositoryImpl implements LotRepository {
     @Override
     public List<Lot> findAvailableLotsByBoissonCode(String boissonCode) {
         TypedQuery<Lot> query = em.createQuery(
-                "SELECT l FROM Lot l WHERE l.boisson.codeBoisson = :boissonCode AND l.quantiteActuelle > 0 AND l.typeLotStatus.libelle = 'Actif'", Lot.class);
+            "SELECT l FROM Lot l " +
+            "LEFT JOIN FETCH l.boisson b " +
+            "LEFT JOIN FETCH b.categorie " +
+            "LEFT JOIN FETCH l.fournisseur " +
+            "LEFT JOIN FETCH l.typeLotStatus " +
+            "WHERE l.boisson.codeBoisson = :boissonCode " +
+            "AND l.quantiteActuelle > 0 " +
+            "AND l.typeLotStatus.libelle = 'Actif'", Lot.class);
         query.setParameter("boissonCode", boissonCode);
         return query.getResultList();
     }
