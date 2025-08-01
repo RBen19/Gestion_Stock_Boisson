@@ -38,7 +38,7 @@ public class BoissonSeeder {
 
     public void seedBoissons() {
         LOGGER.info("Démarrage du seeder de boissons...");
-        // The actual seeding logic is now in BoissonServiceImpl
+        boissonService.seedBoissons();
         LOGGER.info("Seeder de boissons terminé.");
     }
 }

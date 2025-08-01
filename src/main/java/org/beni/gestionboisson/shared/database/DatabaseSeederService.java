@@ -87,7 +87,7 @@ public class DatabaseSeederService {
             fournisseurSeeder.seedFournisseurs();
             
             logger.info("Seeding des boissons et catégories...");
-            boissonSeeder.init();
+            boissonSeeder.seedBoissons();
             
             // Phase 3: Données transactionnelles pour statistiques
             logger.info("Seeding des lots avec données réalistes...");
@@ -120,7 +120,7 @@ public class DatabaseSeederService {
             typeEmplacementSeeder.init();
             emplacementSeeder.init();
             fournisseurSeeder.seedFournisseurs();
-            boissonSeeder.init();
+            boissonSeeder.seedBoissons();
             lotSeeder.seedLots();
             mouvementSeeder.seedMouvements();
             
