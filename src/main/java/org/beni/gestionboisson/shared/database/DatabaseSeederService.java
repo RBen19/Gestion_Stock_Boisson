@@ -17,6 +17,9 @@ import org.beni.gestionboisson.boisson.database.seeders.BoissonSeeder;
 import org.beni.gestionboisson.lot.database.seeders.LotSeeder;
 import org.beni.gestionboisson.mouvement.database.seeders.MouvementSeeder;
 
+/**
+ * Service pour l'initialisation des données de test dans la base de données
+ */
 @ApplicationScoped
 public class DatabaseSeederService {
 
@@ -57,47 +60,47 @@ public class DatabaseSeederService {
      * Cet ordre respecte les relations entre entités pour éviter les erreurs
      */
     public void runAllSeeders() {
-        logger.info("🌱 Démarrage du processus de seeding complet de la base de données...");
+        logger.info("Démarrage du processus de seeding complet de la base de données...");
 
         try {
             // Phase 1: Entités de base et référentiels
-            logger.info("1️⃣ Seeding des rôles et utilisateurs...");
+            logger.info("Seeding des rôles et utilisateurs...");
             authSeeder.init();
             
-            logger.info("2️⃣ Seeding des unités de mesure...");
+            logger.info("Seeding des unités de mesure...");
             uniteDeMesureSeeder.init();
             
-            logger.info("3️⃣ Seeding des statuts de lot...");
+            logger.info("Seeding des statuts de lot...");
             typeLotStatusSeeder.seedTypeLotStatus();
             
-            logger.info("4️⃣ Seeding des types de mouvement...");
+            logger.info("Seeding des types de mouvement...");
             typeMouvementSeeder.seedTypeMouvement();
             
-            logger.info("5️⃣ Seeding des types d'emplacement...");
+            logger.info("Seeding des types d'emplacement...");
             typeEmplacementSeeder.init();
             
-            logger.info("6️⃣ Seeding des emplacements...");
+            logger.info("Seeding des emplacements...");
             emplacementSeeder.init();
             
             // Phase 2: Entités métier de base
-            logger.info("7️⃣ Seeding des fournisseurs...");
+            logger.info("Seeding des fournisseurs...");
             fournisseurSeeder.seedFournisseurs();
             
-            logger.info("8️⃣ Seeding des boissons et catégories...");
+            logger.info("Seeding des boissons et catégories...");
             boissonSeeder.init();
             
             // Phase 3: Données transactionnelles pour statistiques
-            logger.info("9️⃣ Seeding des lots avec données réalistes...");
+            logger.info("Seeding des lots avec données réalistes...");
             lotSeeder.seedLots();
             
-            logger.info("🔟 Seeding des mouvements et lignes de mouvement...");
+            logger.info("Seeding des mouvements et lignes de mouvement...");
             mouvementSeeder.seedMouvements();
 
-            logger.info("✅ Processus de seeding complet terminé avec succès!");
-            logger.info("📊 Votre dashboard contient maintenant des données riches pour les statistiques!");
+            logger.info("Processus de seeding complet terminé avec succès!");
+            logger.info("Votre dashboard contient maintenant des données riches pour les statistiques!");
 
         } catch (Exception e) {
-            logger.error("❌ Erreur lors du processus de seeding global: {}", e.getMessage(), e);
+            logger.error("Erreur lors du processus de seeding global: {}", e.getMessage(), e);
             throw new RuntimeException("Échec du seeding de la base de données", e);
         }
     }
@@ -106,7 +109,7 @@ public class DatabaseSeederService {
      * Méthode pour réexécuter manuellement tous les seeders
      */
     public void reseedAll() {
-        logger.info("🔄 Réexécution manuelle de tous les seeders...");
+        logger.info("Réexécution manuelle de tous les seeders...");
         
         try {
             // Ordre complet pour réexécution
@@ -121,9 +124,9 @@ public class DatabaseSeederService {
             lotSeeder.seedLots();
             mouvementSeeder.seedMouvements();
             
-            logger.info("✅ Réexécution complète des seeders terminée!");
+            logger.info("Réexécution complète des seeders terminée!");
         } catch (Exception e) {
-            logger.error("❌ Erreur lors de la réexécution des seeders: {}", e.getMessage(), e);
+            logger.error("Erreur lors de la réexécution des seeders: {}", e.getMessage(), e);
         }
     }
 }

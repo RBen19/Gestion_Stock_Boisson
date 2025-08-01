@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
-public class AuthSeeder {
+public class  AuthSeeder {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthSeeder.class);
 

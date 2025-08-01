@@ -16,12 +16,12 @@ public class TypeLotStatusSeeder {
     private TypeLotStatusService typeLotStatusService;
 
     public void seedTypeLotStatus() {
-        logger.info("🏷️ Début du seeding des types de statut de lot...");
+        logger.info("Début du seeding des types de statut de lot...");
 
         try {
             // Vérifier si des données existent déjà
             if (!typeLotStatusService.getAllTypeLotStatuses().isEmpty()) {
-                logger.info("⚠️ TypeLotStatus déjà présents, seeding ignoré");
+                logger.info("TypeLotStatus déjà présents, seeding ignoré");
                 return;
             }
 
@@ -34,10 +34,10 @@ public class TypeLotStatusSeeder {
             createTypeLotStatusIfNotExists("Endommagé", "endommage");
             createTypeLotStatusIfNotExists("Retour fournisseur", "retour_fournisseur");
 
-            logger.info("✅ Seeding des TypeLotStatus terminé avec succès");
+            logger.info("Seeding des TypeLotStatus terminé avec succès");
 
         } catch (Exception e) {
-            logger.error("❌ Erreur lors du seeding des TypeLotStatus: {}", e.getMessage(), e);
+            logger.error("Erreur lors du seeding des TypeLotStatus: {}", e.getMessage(), e);
             throw new RuntimeException("Échec du seeding TypeLotStatus", e);
         }
     }
@@ -50,10 +50,10 @@ public class TypeLotStatusSeeder {
                     .build();
             
             typeLotStatusService.createTypeLotStatus(dto);
-            logger.info("✓ TypeLotStatus créé: {} ({})", libelle, slug);
+            logger.info("TypeLotStatus créé: {} ({})", libelle, slug);
             
         } catch (Exception e) {
-            logger.warn("⚠️ TypeLotStatus '{}' existe peut-être déjà: {}", libelle, e.getMessage());
+            logger.warn("TypeLotStatus '{}' existe peut-être déjà: {}", libelle, e.getMessage());
         }
     }
 }

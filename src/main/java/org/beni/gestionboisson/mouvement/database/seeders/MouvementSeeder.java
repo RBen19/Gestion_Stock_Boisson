@@ -48,12 +48,12 @@ public class MouvementSeeder {
     private final Random random = new Random();
 
     public void seedMouvements() {
-        logger.info("🔄 Début du seeding des mouvements...");
+        logger.info("Début du seeding des mouvements...");
 
         try {
             // Vérifier si des mouvements existent déjà
             if (!mouvementService.getAllMouvements().isEmpty()) {
-                logger.info("⚠️ Des mouvements existent déjà, seeding ignoré");
+                logger.info("Des mouvements existent déjà, seeding ignoré");
                 return;
             }
 
@@ -64,7 +64,7 @@ public class MouvementSeeder {
             List<Emplacement> emplacements = emplacementRepository.findAll();
 
             if (lots.isEmpty() || typesMouvement.isEmpty() || utilisateurs.isEmpty() || emplacements.isEmpty()) {
-                logger.warn("⚠️ Données de référence manquantes pour créer les mouvements");
+                logger.warn("Données de référence manquantes pour créer les mouvements");
                 return;
             }
 
@@ -76,10 +76,10 @@ public class MouvementSeeder {
             // Créer différents types de mouvements pour les statistiques
             createVariousMovements(lots, typesMouvement, utilisateurDefaut, emplacements);
 
-            logger.info("✅ Seeding des mouvements terminé avec succès");
+            logger.info("Seeding des mouvements terminé avec succès");
 
         } catch (Exception e) {
-            logger.error("❌ Erreur lors du seeding des mouvements: {}", e.getMessage(), e);
+            logger.error("Erreur lors du seeding des mouvements: {}", e.getMessage(), e);
             throw new RuntimeException("Échec du seeding des mouvements", e);
         }
     }
@@ -122,11 +122,11 @@ public class MouvementSeeder {
                 createLignesMouvementForMouvement(mouvementCree, lots, emplacements, nombreLignes);
 
                 if ((i + 1) % 5 == 0) {
-                    logger.info("✓ {} mouvements créés...", i + 1);
+                    logger.info("{} mouvements créés...", i + 1);
                 }
 
             } catch (Exception e) {
-                logger.warn("⚠️ Erreur création mouvement {}: {}", i + 1, e.getMessage());
+                logger.warn("Erreur création mouvement {}: {}", i + 1, e.getMessage());
             }
         }
     }
@@ -156,7 +156,7 @@ public class MouvementSeeder {
                 ligneMouvementService.createLigneMouvement(ligneDTO);
 
             } catch (Exception e) {
-                logger.warn("⚠️ Erreur création ligne mouvement: {}", e.getMessage());
+                logger.warn("Erreur création ligne mouvement: {}", e.getMessage());
             }
         }
     }

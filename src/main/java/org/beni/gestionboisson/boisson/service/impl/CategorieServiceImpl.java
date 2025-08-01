@@ -137,7 +137,7 @@ public class CategorieServiceImpl implements CategorieService {
     @Transactional
     public void seedCategories() {
         logger.info("Starting category seeding process.");
-        // 🧊 1. Boissons non alcoolisées (softs)
+        // 1. Boissons non alcoolisées (softs)
         Categorie nonAlcoolisee = createCategory("Boissons non alcoolisées", null);
 
         // A. Eaux

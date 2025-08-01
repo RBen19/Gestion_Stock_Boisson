@@ -29,9 +29,6 @@ public class LotController {
 
     @Inject
     private LotService lotService;
-    //TODO: penser à rajouter une colonne volumeParUnite sur le modèle de Lot qui sera un String résultant
-    // de la concaténation du volume donner par l'utilisateur en Double et de l'unite de mesure
-    // Ajouter cette colonne à ligneMouvement aussi
     @POST
     @Secured
     public Response createLot(LotDTO lotDTO) {

@@ -16,12 +16,12 @@ public class TypeMouvementSeeder {
     private TypeMouvementService typeMouvementService;
 
     public void seedTypeMouvement() {
-        logger.info("🔄 Début du seeding des types de mouvement...");
+        logger.info("Début du seeding des types de mouvement...");
 
         try {
             // Vérifier si des données existent déjà
             if (!typeMouvementService.getAllTypeMouvements().isEmpty()) {
-                logger.info("⚠️ TypeMouvement déjà présents, seeding ignoré");
+                logger.info("TypeMouvement déjà présents, seeding ignoré");
                 return;
             }
 
@@ -36,10 +36,10 @@ public class TypeMouvementSeeder {
             createTypeMouvementIfNotExists("Inventaire", "INVENTAIRE");
             createTypeMouvementIfNotExists("Ajustement", "AJUSTEMENT");
 
-            logger.info("✅ Seeding des TypeMouvement terminé avec succès");
+            logger.info("Seeding des TypeMouvement terminé avec succès");
 
         } catch (Exception e) {
-            logger.error("❌ Erreur lors du seeding des TypeMouvement: {}", e.getMessage(), e);
+            logger.error("Erreur lors du seeding des TypeMouvement: {}", e.getMessage(), e);
             throw new RuntimeException("Échec du seeding TypeMouvement", e);
         }
     }
@@ -52,10 +52,10 @@ public class TypeMouvementSeeder {
                     .build();
             
             typeMouvementService.createTypeMouvement(dto);
-            logger.info("✓ TypeMouvement créé: {} ({})", libelle, code);
+            logger.info("TypeMouvement créé: {} ({})", libelle, code);
             
         } catch (Exception e) {
-            logger.warn("⚠️ TypeMouvement '{}' existe peut-être déjà: {}", libelle, e.getMessage());
+            logger.warn("TypeMouvement '{}' existe peut-être déjà: {}", libelle, e.getMessage());
         }
     }
 }

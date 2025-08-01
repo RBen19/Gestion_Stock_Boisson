@@ -41,7 +41,7 @@ public class LigneMouvement {
     private Emplacement emplacementDestination;
 
     @Column(unique = true, nullable = false)
-    private String code; // auto-generated, simple readable format
+    private String code;
 
     @Column(name = "prix_unitaire", precision = 10, scale = 2)
     private BigDecimal prixUnitaire;

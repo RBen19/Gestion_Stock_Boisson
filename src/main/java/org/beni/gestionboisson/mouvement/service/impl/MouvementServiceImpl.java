@@ -273,7 +273,6 @@ public class MouvementServiceImpl implements MouvementService {
         logger.info("Début du transfert multiple de lots pour la boisson: {}, quantité désirée: {}", 
                    transfertDTO.getBoissonCode(), transfertDTO.getQuantiteTotaleDesire());
 
-        // Validation des entrées
         if (transfertDTO.getLots() == null || transfertDTO.getLots().isEmpty()) {
             throw new IllegalArgumentException("La liste des lots ne peut pas être vide");
         }
@@ -282,15 +281,12 @@ public class MouvementServiceImpl implements MouvementService {
             throw new IllegalArgumentException("La quantité désirée doit être supérieure à zéro");
         }
 
-        // Vérification de l'emplacement de destination
         Emplacement destination = emplacementRepository.findByCodeEmplacement(transfertDTO.getCodeEmplacementDestination())
                 .orElseThrow(() -> new EntityNotFoundException("Emplacement introuvable avec code: " + transfertDTO.getCodeEmplacementDestination()));
 
-        // Vérification de l'utilisateur
         Utilisateur utilisateur = utilisateurRepository.findByEmail(transfertDTO.getUtilisateurEmail())
                 .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable avec email: " + transfertDTO.getUtilisateurEmail()));
 
-        // Création du mouvement principal
         TypeMouvement typeMouvement = typeMouvementRepository.findByCode("TRANSFERT_MULTIPLE")
                 .or(() -> typeMouvementRepository.findByCode("TRANSFERT"))
                 .orElseThrow(() -> new EntityNotFoundException("TypeMouvement TRANSFERT introuvable"));
@@ -303,17 +299,15 @@ public class MouvementServiceImpl implements MouvementService {
 
         MouvementDTO mouvementPrincipal = this.createMouvement(mouvementDTO);
 
-        // Traitement des lots un par un selon l'ordre FIFO/LIFO/FEFO
         List<TransfertMultipleLotResponseDTO.TransfertLotDetail> detailsTransferts = new ArrayList<>();
         double quantiteRestante = transfertDTO.getQuantiteTotaleDesire();
         double quantiteTransfereeTotale = 0.0;
 
         for (LotResponseDTO lotDTO : transfertDTO.getLots()) {
             if (quantiteRestante <= 0) {
-                break; // Quantité désirée atteinte
+                break;
             }
 
-            // Récupération du lot depuis la base
             Lot lot = lotRepository.findByNumeroLot(lotDTO.getNumeroLot())
                     .orElseThrow(() -> new EntityNotFoundException("Lot introuvable: " + lotDTO.getNumeroLot()));
 
@@ -324,19 +318,16 @@ public class MouvementServiceImpl implements MouvementService {
                 continue; // Lot épuisé, passer au suivant
             }
 
-            // Effectuer le transfert pour ce lot
             boolean transfertTotal = quantiteATransferer >= quantiteDisponible;
             String numeroLotTransfere;
-            String emplacementSource = lot.getCodeEmplacementActuel(); // Capturer l'emplacement source avant modification
+            String emplacementSource = lot.getCodeEmplacementActuel();
 
             if (transfertTotal) {
-                // Transfert total - mise à jour de l'emplacement
                 lot.setCodeEmplacementActuel(destination.getCodeEmplacement());
                 lotRepository.save(lot);
                 numeroLotTransfere = lot.getNumeroLot();
                 logger.info("Transfert total du lot {}: {} unités", lot.getNumeroLot(), quantiteATransferer);
             } else {
-                // Transfert partiel - création d'un nouveau lot
                 LotDTO nouveauLotDTO = LotDTO.builder()
                         .quantiteActuelle(quantiteATransferer)
                         .quantiteInitiale(quantiteATransferer)
@@ -350,18 +341,15 @@ public class MouvementServiceImpl implements MouvementService {
                         .utilisateurEmail(transfertDTO.getUtilisateurEmail())
                         .build();
 
-                // Réduire la quantité du lot original
                 lot.setQuantiteActuelle(quantiteDisponible - quantiteATransferer);
                 lotRepository.save(lot);
 
-                // Créer le nouveau lot transféré
                 LotResponseDTO nouveauLot = lotService.createLot(nouveauLotDTO);
                 numeroLotTransfere = nouveauLot.getNumeroLot();
                 logger.info("Transfert partiel du lot {}: {} unités transférées vers le nouveau lot {}", 
                            lot.getNumeroLot(), quantiteATransferer, numeroLotTransfere);
             }
 
-            // Créer la ligne de mouvement pour ce transfert
             LigneMouvementCreateDTO ligneDTO = LigneMouvementCreateDTO.builder()
                     .mouvementId(mouvementPrincipal.getId())
                     .lotCode(numeroLotTransfere)
@@ -372,8 +360,7 @@ public class MouvementServiceImpl implements MouvementService {
 
             ligneMouvementService.createLigneMouvement(ligneDTO);
 
-            // Ajouter les détails du transfert
-            TransfertMultipleLotResponseDTO.TransfertLotDetail detail = 
+            TransfertMultipleLotResponseDTO.TransfertLotDetail detail =
                 TransfertMultipleLotResponseDTO.TransfertLotDetail.builder()
                     .numeroLotOriginal(lot.getNumeroLot())
                     .numeroLotTransfere(numeroLotTransfere)
@@ -383,7 +370,6 @@ public class MouvementServiceImpl implements MouvementService {
 
             detailsTransferts.add(detail);
 
-            // Mettre à jour les compteurs
             quantiteRestante -= quantiteATransferer;
             quantiteTransfereeTotale += quantiteATransferer;
         }

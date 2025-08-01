@@ -43,12 +43,12 @@ public class LotSeeder {
     private final Random random = new Random();
 
     public void seedLots() {
-        logger.info("📦 Début du seeding des lots...");
+        logger.info("Début du seeding des lots...");
 
         try {
             // Vérifier si des lots existent déjà
             if (!lotService.getAllLots().isEmpty()) {
-                logger.info("⚠️ Des lots existent déjà, seeding ignoré");
+                logger.info("Des lots existent déjà, seeding ignoré");
                 return;
             }
 
@@ -59,7 +59,7 @@ public class LotSeeder {
             List<Emplacement> emplacements = emplacementRepository.findAll();
 
             if (boissons.isEmpty() || fournisseurs.isEmpty() || statusList.isEmpty() || emplacements.isEmpty()) {
-                logger.warn("⚠️ Données de référence manquantes pour créer les lots");
+                logger.warn("Données de référence manquantes pour créer les lots");
                 return;
             }
 
@@ -77,10 +77,10 @@ public class LotSeeder {
             // Créer des lots variés pour statistiques intéressantes
             createLotsForStatistics(boissons, fournisseurs, statusActif, emplacementReception);
 
-            logger.info("✅ Seeding des lots terminé avec succès");
+            logger.info("Seeding des lots terminé avec succès");
 
         } catch (Exception e) {
-            logger.error("❌ Erreur lors du seeding des lots: {}", e.getMessage(), e);
+            logger.error("Erreur lors du seeding des lots: {}", e.getMessage(), e);
             throw new RuntimeException("Échec du seeding des lots", e);
         }
     }
@@ -121,11 +121,11 @@ public class LotSeeder {
                 lotService.createLot(lotDTO);
                 
                 if ((i + 1) % 10 == 0) {
-                    logger.info("✓ {} lots créés...", i + 1);
+                    logger.info("{} lots créés...", i + 1);
                 }
 
             } catch (Exception e) {
-                logger.warn("⚠️ Erreur création lot {}: {}", i + 1, e.getMessage());
+                logger.warn("Erreur création lot {}: {}", i + 1, e.getMessage());
             }
         }
     }
