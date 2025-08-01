@@ -57,6 +57,14 @@ public class  AuthSeeder {
             utilisateurService.createUtilisateur(utilisateurDTO, "ADMIN");
             logger.info("Seeded user rben19.");
         }
+        if (!utilisateurService.checkNomUtilisateurExists("vivi")) {
+            UtilisateurDTO utilisateurDTO = new UtilisateurDTO();
+            utilisateurDTO.setNomUtilisateur("vivi");
+            utilisateurDTO.setEmail("vividev@example.com");
+            utilisateurDTO.setPassword("password123");
+            utilisateurService.createUtilisateur(utilisateurDTO, "ADMIN");
+            logger.info("Seeded user vividev.");
+        }
         
         seedPersonnelUsers();
     }
