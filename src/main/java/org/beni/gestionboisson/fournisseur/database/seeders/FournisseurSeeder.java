@@ -47,7 +47,7 @@ public class FournisseurSeeder {
 
             LOGGER.info("Seeder de fournisseurs terminé.");
         } catch (Exception e) {
-            LOGGER.error("Erreur lors du seeding des fournisseurs: {}", e.getMessage(), e);
+            LOGGER.severe("Erreur lors du seeding des fournisseurs: " + e.getMessage());
             throw new RuntimeException("Échec du seeding des fournisseurs", e);
         }
     }
