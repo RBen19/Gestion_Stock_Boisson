@@ -45,7 +45,24 @@ public class LigneMouvementRepositoryImpl implements LigneMouvementRepository {
 
     @Override
     public Optional<LigneMouvement> findById(Long id) {
-        return Optional.ofNullable(em.find(LigneMouvement.class, id));
+        try {
+            return Optional.of(em.createQuery(
+                "SELECT lm FROM LigneMouvement lm " +
+                "LEFT JOIN FETCH lm.mouvement m " +
+                "LEFT JOIN FETCH m.typeMouvement " +
+                "LEFT JOIN FETCH m.utilisateur u " +
+                "LEFT JOIN FETCH u.role " +
+                "LEFT JOIN FETCH lm.lot l " +
+                "LEFT JOIN FETCH l.boisson b " +
+                "LEFT JOIN FETCH b.categorie " +
+                "LEFT JOIN FETCH l.fournisseur " +
+                "LEFT JOIN FETCH l.typeLotStatus " +
+                "WHERE lm.id = :id", LigneMouvement.class)
+                .setParameter("id", id)
+                .getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -61,7 +78,18 @@ public class LigneMouvementRepositoryImpl implements LigneMouvementRepository {
 
     @Override
     public List<LigneMouvement> findAll() {
-        return em.createQuery("SELECT lm FROM LigneMouvement lm", LigneMouvement.class).getResultList();
+        return em.createQuery(
+            "SELECT lm FROM LigneMouvement lm " +
+            "LEFT JOIN FETCH lm.mouvement m " +
+            "LEFT JOIN FETCH m.typeMouvement " +
+            "LEFT JOIN FETCH m.utilisateur u " +
+            "LEFT JOIN FETCH u.role " +
+            "LEFT JOIN FETCH lm.lot l " +
+            "LEFT JOIN FETCH l.boisson b " +
+            "LEFT JOIN FETCH b.categorie " +
+            "LEFT JOIN FETCH l.fournisseur " +
+            "LEFT JOIN FETCH l.typeLotStatus", LigneMouvement.class)
+            .getResultList();
     }
 
     @Override

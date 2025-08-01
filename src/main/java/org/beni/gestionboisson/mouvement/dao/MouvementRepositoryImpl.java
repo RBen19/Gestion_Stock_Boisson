@@ -47,15 +47,31 @@ public class MouvementRepositoryImpl implements MouvementRepository {
 
     @Override
     public Optional<Mouvement> findById(Long id) {
-        return Optional.ofNullable(em.find(Mouvement.class, id));
+        try {
+            return Optional.of(em.createQuery(
+                "SELECT m FROM Mouvement m " +
+                "LEFT JOIN FETCH m.typeMouvement " +
+                "LEFT JOIN FETCH m.utilisateur u " +
+                "LEFT JOIN FETCH u.role " +
+                "WHERE m.id = :id", Mouvement.class)
+                .setParameter("id", id)
+                .getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Mouvement> findByCode(String code) {
         try {
-            return Optional.of(em.createQuery("SELECT m FROM Mouvement m WHERE m.code = :code", Mouvement.class)
-                    .setParameter("code", code)
-                    .getSingleResult());
+            return Optional.of(em.createQuery(
+                "SELECT m FROM Mouvement m " +
+                "LEFT JOIN FETCH m.typeMouvement " +
+                "LEFT JOIN FETCH m.utilisateur u " +
+                "LEFT JOIN FETCH u.role " +
+                "WHERE m.code = :code", Mouvement.class)
+                .setParameter("code", code)
+                .getSingleResult());
         } catch (NoResultException e) {
             return Optional.empty();
         }
@@ -63,7 +79,12 @@ public class MouvementRepositoryImpl implements MouvementRepository {
 
     @Override
     public List<Mouvement> findAll() {
-        return em.createQuery("SELECT m FROM Mouvement m", Mouvement.class).getResultList();
+        return em.createQuery(
+            "SELECT m FROM Mouvement m " +
+            "LEFT JOIN FETCH m.typeMouvement " +
+            "LEFT JOIN FETCH m.utilisateur u " +
+            "LEFT JOIN FETCH u.role", Mouvement.class)
+            .getResultList();
     }
 
     @Override

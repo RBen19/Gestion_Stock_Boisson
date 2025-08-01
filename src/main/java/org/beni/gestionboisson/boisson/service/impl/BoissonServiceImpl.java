@@ -101,7 +101,7 @@ public class BoissonServiceImpl implements BoissonService {
                 BoissonDTO.builder().nom("Café Expresso en Brique").codeCategorie("CAFE").build(),
                 BoissonDTO.builder().nom("Thé Noir Infusé").codeCategorie("THE").build(),
 
-                BoissonDTO.builder().nom("Bière Blonde").codeCategorie("BIERE_BLONDE").build(),
+                BoissonDTO.builder().nom("Bière Blonde").codeCategorie("BLONDE").build(),
                 BoissonDTO.builder().nom("Bière Ambrée").codeCategorie("BIERE_AMBREE").build(),
 
                 BoissonDTO.builder().nom("Vin Rouge Bordeaux").codeCategorie("VIN_ROUGE").build(),

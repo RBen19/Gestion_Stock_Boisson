@@ -69,8 +69,7 @@ public class LotSeeder {
                     .orElse(statusList.get(0));
 
             Emplacement emplacementReception = emplacements.stream()
-                    .filter(emp -> emp.getCodeEmplacement().contains("ZR") || 
-                                  emp.getNom().toLowerCase().contains("réception"))
+                    .filter(emp -> emp.getNom().toLowerCase().contains("réception"))
                     .findFirst()
                     .orElse(emplacements.get(0));
 

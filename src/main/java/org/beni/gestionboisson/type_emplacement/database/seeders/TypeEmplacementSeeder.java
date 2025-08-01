@@ -31,7 +31,7 @@ public class TypeEmplacementSeeder {
             typeEmplacementService.createTypeEmplacement(TypeEmplacementDTO.builder().code("DISPLAY").libelle("Présentoir").description("Zone d'exposition des produits").build());
             typeEmplacementService.createTypeEmplacement(TypeEmplacementDTO.builder().code("RECEIVING").libelle("Réception").description("Zone de réception des marchandises").build());
             typeEmplacementService.createTypeEmplacement(TypeEmplacementDTO.builder().code("SHIPPING").libelle("Expédition").description("Zone d'expédition des marchandises").build());
-            typeEmplacementService.createTypeEmplacement(TypeEmplacementDTO.builder().code("RF").libelle("retour-fournisseur").description("Zone dédiée au renvoi ou au stockage temporaire des marchandises à retourner au fournisseur").build());
+            typeEmplacementService.createTypeEmplacement(TypeEmplacementDTO.builder().code("retour-fournisseur").libelle("retour-fournisseur").description("Zone dédiée au renvoi ou au stockage temporaire des marchandises à retourner au fournisseur").build());
             typeEmplacementService.createTypeEmplacement(TypeEmplacementDTO.builder().code("ZS").libelle("zone-sortie").description("Zone dédiée a la sortie  des marchandises ").build());
             logger.info("TypeEmplacements seeded.");
         }
